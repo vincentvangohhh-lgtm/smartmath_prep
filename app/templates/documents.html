@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Thư Viện Tài Liệu Ôn Thi - Math 12A3{% endblock %}
+
+{% block content %}
+<style>
+    /* Card Tài liệu phong cách Sang Trọng */
+    .doc-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .doc-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 74, 173, 0.12);
+    }
+
+    .doc-cover-img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Badge PDF nhỏ nhắn */
+    .badge-pdf-type {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    /* 🔵 NÚT TẢI VỀ MÀU XANH DƯƠNG ĐỒNG BỘ THEME MATH 12A3 */
+    .btn-doc-download {
+        background: linear-gradient(135deg, #0066cc 0%, #004aad 100%);
+        color: #ffffff !important;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 8px 16px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 74, 173, 0.2);
+        transition: all 0.2s ease;
+    }
+
+    .btn-doc-download:hover {
+        background: linear-gradient(135deg, #0052a3 0%, #003080 100%);
+        color: #ffffff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 74, 173, 0.35);
+    }
+
+    /* Nút Xem chi tiết (Màu Xám Xanh Navy) */
+    .btn-doc-view {
+        background-color: #64748b;
+        color: #ffffff !important;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 8px 16px;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-doc-view:hover {
+        background-color: #475569;
+        color: #ffffff !important;
+        transform: translateY(-2px);
+    }
+
+    /* 🟢 ÉP Z-INDEX CHỐNG LỖI MODAL BỊ MÀN XÁM ĐÈ */
+    .modal-backdrop {
+        z-index: 1050 !important;
+    }
+    .modal {
+        z-index: 1060 !important;
+    }
+
+    /* Tối ưu hóa giao diện modal xem PDF trên di động */
+    @media (max-width: 991.98px) {
+        #pdfViewerModal .modal-dialog {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100vh !important;
+            margin: 0 !important;
+        }
+        #pdfViewerModal .modal-content {
+            height: 100vh !important;
+            border-radius: 0 !important;
+        }
+        #pdfViewerModal .modal-body {
+            height: calc(100vh - 60px) !important;
+            background-color: #f8f9fa !important;
+        }
+    }
+
+    /* 🌙 DARK MODE DỒN MÀU CHO THƯ VIỆN TÀI LIỆU */
+    [data-theme="dark"] .doc-card {
+        background-color: #15203e !important;
+        border-color: #24345d !important;
+    }
+
+    [data-theme="dark"] .doc-card h5 {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .badge-pdf-type {
+        background-color: rgba(2, 132, 199, 0.2) !important;
+        color: #38bdf8 !important;
+    }
+</style>
+
+<div class="container my-4">
+
+    <!-- HEADER THƯ VIỆN -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4 p-4 rounded-4 bg-white shadow-sm border">
+        <div>
+            <h2 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+                <span>📚</span> Thư Viện Tài Liệu Ôn Thi Toán 12
+            </h2>
+            <p class="text-muted small mb-0">Tổng hợp đề thi thử THPT Quốc Gia, chuyên đề nâng cao và đáp án chi tiết.</p>
+        </div>
+
+        {% if current_user.is_authenticated and current_user.role in ['admin', 'teacher'] %}
+            <!-- Nút Upload dành cho Admin & Giáo viên -->
+            <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#uploadDocModal">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Đăng Tài Liệu PDF Mới</span>
+            </button>
+        {% endif %}
+    </div>
+
+    <!-- DANH SÁCH CARDS TÀI LIỆU -->
+    <div class="row g-4">
+        {% if documents %}
+            {% for doc in documents %}
+                <div class="col-12 col-lg-6">
+                    <div class="doc-card p-3">
+                        <div class="d-flex gap-3 align-items-center">
+                            <!-- Bìa tài liệu -->
+                            <img src="{{ url_for('static', filename='uploads/covers/' + doc.cover_image) if doc.cover_image else url_for('static', filename='images/logo_12A3_3.png') }}" 
+                                 class="doc-cover-img flex-shrink-0" alt="Cover">
+                            
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="badge-pdf-type"><i class="fa-solid fa-file-pdf me-1"></i>File PDF</span>
+                                    <small class="text-muted" style="font-size: 11px;">
+                                        <i class="fa-regular fa-clock me-1"></i>{{ doc.created_at.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </div>
+                                
+                                <h5 class="fw-bold text-dark text-truncate-2 fs-6 mb-3" style="line-height: 1.4;">
+                                    {{ doc.title }}
+                                </h5>
+
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <!-- 🔵 NÚT TẢI VỀ MÀU XANH -->
+                                    <a href="{{ url_for('static', filename='uploads/pdfs/' + doc.filename) }}" download class="btn btn-doc-download btn-sm flex-fill text-center text-decoration-none">
+                                        <i class="fa-solid fa-download me-1"></i>Tải về
+                                    </a>
+
+                                    <!-- NÚT XEM TRỰC TIẾP (TỰ ĐỘNG PHÂN TÁCH CHO MOBILE & DESKTOP) -->
+                                    <a href="{{ url_for('static', filename='uploads/pdfs/' + doc.filename) }}" 
+                                       onclick="handleViewDoc(event, '{{ url_for('static', filename='uploads/pdfs/' + doc.filename) }}', '{{ doc.title }}')" 
+                                       target="_blank" 
+                                       class="btn btn-doc-view btn-sm flex-fill text-center text-decoration-none">
+                                        <i class="fa-solid fa-eye me-1"></i>Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="fa-solid fa-folder-open display-4 mb-3 d-block opacity-50"></i>
+                <p>Hiện chưa có tài liệu PDF nào trong thư viện.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- 🟢 POPUP MODAL XEM TRỰC TIẾP FILE PDF (DÀNH CHO DESKTOP) -->
+<div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" style="height: 90vh;">
+        <div class="modal-content h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark text-white py-3">
+                <h6 class="modal-title fw-bold text-truncate" id="pdfViewerTitle">
+                    <i class="fa-solid fa-file-pdf text-danger me-2"></i>Xem Tài Liệu
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 h-100 bg-secondary position-relative">
+                <iframe id="pdfIframe" src="" class="w-100 h-100 border-0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.role in ['admin', 'teacher'] %}
+    <!-- 🟢 POPUP MODAL UPLOAD TÀI LIỆU DÀNH CHO ADMIN & TEACHER -->
+    <div class="modal fade" id="uploadDocModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-primary text-white py-3">
+                    <h5 class="modal-title fw-bold fs-6">
+                        <i class="fa-solid fa-file-circle-plus me-2"></i>Tải Lên Tài Liệu PDF Mới
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ url_for('main.upload_document') }}" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body p-4 bg-white">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Tên tiêu đề tài liệu</label>
+                            <input type="text" name="title" class="form-control rounded-3" placeholder="ĐỀ THI THỬ THPT 2025 - SỞ CÀ MAU - TOÁN HỌC" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">File PDF tài liệu (*.pdf)</label>
+                            <input type="file" name="pdf_file" class="form-control rounded-3" accept=".pdf" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Ảnh bìa xem trước (Không bắt buộc)</label>
+                            <input type="file" name="cover_file" class="form-control rounded-3" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0 px-4 py-3">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold small" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold small shadow-sm">
+                            Tải Lên Thư Viện <i class="fa-solid fa-check me-1"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+// Chuyển Modal trực tiếp ra thẻ body để chống lỗi phần tử cha che nền
+document.addEventListener("DOMContentLoaded", function() {
+    const uploadModal = document.getElementById('uploadDocModal');
+    if (uploadModal) {
+        document.body.appendChild(uploadModal);
+    }
+    
+    const pdfModal = document.getElementById('pdfViewerModal');
+    if (pdfModal) {
+        document.body.appendChild(pdfModal);
+    }
+});
+
+function handleViewDoc(event, pdfUrl, title) {
+    // Kiểm tra thiết bị di động (Mobile)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Trên điện thoại: Cho phép thẻ <a> tự mở tab mới qua href tiêu chuẩn, không chặn sự kiện
+        return true;
+    }
+    
+    // Trên máy tính (Desktop): Ngăn thẻ <a> mở tab mới, thay vào đó bật Modal nhúng iframe xem trực tiếp
+    event.preventDefault();
+    
+    document.getElementById('pdfViewerTitle').innerText = title;
+    const iframe = document.getElementById('pdfIframe');
+    iframe.src = pdfUrl;
+
+    const viewerModal = new bootstrap.Modal(document.getElementById('pdfViewerModal'));
+    viewerModal.show();
+}
+
+const pdfViewerEl = document.getElementById('pdfViewerModal');
+if (pdfViewerEl) {
+    pdfViewerEl.addEventListener('hidden.bs.modal', function () {
+        document.getElementById('pdfIframe').src = '';
+    });
+}
+</script>
+{% endblock %}

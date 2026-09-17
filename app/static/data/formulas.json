@@ -1,0 +1,376 @@
+{
+  "algebra": {
+    "chuong_1": {
+      "title": "Chương 1: Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+      "lessons": [
+        {
+          "lesson_name": "Tính đơn điệu của hàm số",
+          "formulas": [
+            {
+              "id": "alg_c1_l1_1",
+              "name": "Định lý về tính đơn điệu và dấu đạo hàm",
+              "latex_code": "f'(x) \\ge 0, \\forall x \\in K \\Rightarrow \\text{Hàm số đồng biến trên } K",
+              "explanation": "Hàm số phải liên tục trên khoảng K. Dấu bằng chỉ xảy ra tại hữu hạn điểm.",
+              "common_errors": "Quên xét điều kiện dấu bằng xảy ra tại hữu hạn điểm, dẫn đến kết luận sai đối với hàm phân thức hữu tỷ bậc nhất $y = \\frac{ax+b}{cx+d}$ (không được lấy dấu '=' ở đạo hàm).",
+              "memory_trick": "Đạo hàm dương - đồ thị đi lên từ trái sang phải, đạo hàm âm - đồ thị đi xuống.",
+              "example_basic": {
+                "question": "Tìm các khoảng đơn điệu của hàm số $y = x^3 - 3x$.",
+                "solution": "Ta có $y' = 3x^2 - 3$. Cho $y' = 0 \\Leftrightarrow x = \\pm 1$. Bảng xét dấu cho thấy $y' > 0$ trên $(-\\infty; -1)$ và $(1; +\\infty)$.",
+                "final_answer": "Đồng biến trên $(-\\infty; -1)$ và $(1; +\\infty)$, nghịch biến trên $(-1; 1)$."
+              },
+              "example_advanced": {
+                "question": "Tìm m để hàm số $y = \\frac{1}{3}x^3 - mx^2 + 4x + 3$ đồng biến trên $\\mathbb{R}$.",
+                "solution": "Yêu cầu bài toán $\\Leftrightarrow y' = x^2 - 2mx + 4 \\ge 0, \\forall x \\in \\mathbb{R} \\Leftrightarrow \\Delta' = m^2 - 4 \\le 0$.",
+                "final_answer": "$-2 \\le m \\le 2$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Cực trị của hàm số",
+          "formulas": [
+            {
+              "id": "alg_c1_l2_1",
+              "name": "Điều kiện đủ để hàm số có cực trị (Dấu hiệu 1)",
+              "latex_code": "f'(x) \\text{ đổi dấu từ âm sang dương khi qua } x_0 \\Rightarrow x_0 \\text{ là điểm cực tiểu}",
+              "explanation": "Nếu đạo hàm đổi dấu từ dương sang âm khi qua điểm $x_0$ thì $x_0$ là điểm cực đại.",
+              "common_errors": "Nhầm lẫn giữa 'điểm cực trị của hàm số' ($x$), 'giá trị cực trị' ($y$) và 'điểm cực trị của đồ thị hàm số' ($(x;y)$).",
+              "memory_trick": "Đi từ âm sang dương (- sang +) giống như đi xuống thung lũng rồi đi lên tạo thành điểm Cực tiểu.",
+              "example_basic": {
+                "question": "Tìm điểm cực trị của hàm số $y = x^4 - 2x^2 + 1$.",
+                "solution": "$y' = 4x^3 - 4x = 4x(x^2-1)$. Cho $y' = 0 \\Leftrightarrow x = 0$ hoặc $x = \\pm 1$. Qua các điểm này $y'$ đều đổi dấu.",
+                "final_answer": "Điểm cực đại là $x=0$, điểm cực tiểu là $x = \\pm 1$."
+              },
+              "example_advanced": {
+                "question": "Tìm m để hàm số $y = x^3 - 3mx^2 + 3(m^2-1)x$ đạt cực đại tại $x = 1$.",
+                "solution": "Sử dụng Dấu hiệu 2: Tìm $y'$ và $y''$. Giải hệ điều kiện $\\{y'(1) = 0, y''(1) < 0\\}$.",
+                "final_answer": "m = 2"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Giá trị lớn nhất và giá trị nhỏ nhất của hàm số",
+          "formulas": [
+            {
+              "id": "alg_c1_l3_1",
+              "name": "Quy trình tìm GTLN, GTNN trên đoạn [a; b]",
+              "latex_code": "\\max_{[a;b]} f(x) = \\max \\{f(a), f(b), f(x_i)\\}, \\text{ với } f'(x_i) = 0",
+              "explanation": "Tìm các điểm $x_i$ thuộc đoạn $[a;b]$ mà tại đó đạo hàm bằng 0 hoặc không xác định, sau đó tính giá trị và so sánh.",
+              "common_errors": "Tính cả các giá trị $x_i$ nằm ngoài đoạn $[a;b]$ yêu cầu.",
+              "memory_trick": "Chỉ gom các nghiệm thuộc đoạn, tính giá trị hai đầu mút, chọn anh lớn nhất và anh nhỏ nhất.",
+              "example_basic": {
+                "question": "Tìm GTLN và GTNN của hàm số $y = x^3 - 3x$ trên đoạn $[0; 2]$.",
+                "solution": "$y' = 3x^2 - 3 = 0 \\Leftrightarrow x = \\pm 1$. Chỉ có $x=1 \\in [0;2]$. Tính $y(0)=0, y(1)=-2, y(2)=2$.",
+                "final_answer": "$\\max = 2$ tại $x=2$, $\\min = -2$ tại $x=1$."
+              },
+              "example_advanced": {
+                "question": "Tìm GTLN của hàm số $y = x + \\sqrt{4-x^2}$.",
+                "solution": "Tập xác định $D = [-2; 2]$. Tính đạo hàm $y' = 1 - \\frac{x}{\\sqrt{4-x^2}}$. Cho $y'=0 \\Leftrightarrow x = \\sqrt{2}$.",
+                "final_answer": "$\\max = 2\\sqrt{2}$ tại $x=\\sqrt{2}$."
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Đường tiệm cận của đồ thị hàm số",
+          "formulas": [
+            {
+              "id": "alg_c1_l4_1",
+              "name": "Định nghĩa Tiệm cận đứng và Tiệm cận ngang",
+              "latex_code": "\\lim_{x \\to x_0^+} f(x) = \\pm\\infty \\Rightarrow x = x_0 \\text{ (TCĐ)}; \\quad \\lim_{x \\to \\pm\\infty} f(x) = y_0 \\Rightarrow y = y_0 \\text{ (TCN)}",
+              "explanation": "TCĐ thường là nghiệm của mẫu số không làm triệt tiêu tử số. TCN thu được khi tính giới hạn ra vô cực.",
+              "common_errors": "Kết luận nhầm trục: ghi $y = x_0$ cho tiệm cận đứng hoặc kết luận nghiệm của mẫu là TCĐ mà quên chưa rút gọn với tử.",
+              "memory_trick": "Đứng x bằng (nghiệm mẫu), Ngang y bằng (giới hạn vô cực).",
+              "example_basic": {
+                "question": "Tìm tiệm cận của đồ thị hàm số $y = \\frac{2x-1}{x+1}$.",
+                "solution": "Nghiệm mẫu $x = -1$. Giới hạn khi $x \\to \\pm\\infty$ là $\\frac{2}{1} = 2$.",
+                "final_answer": "TCĐ: $x = -1$, TCN: $y = 2$."
+              },
+              "example_advanced": {
+                "question": "Tìm số đường tiệm cận của đồ thị hàm số $y = \\frac{\\sqrt{x+3}-2}{x^2-1}$.",
+                "solution": "ĐKXĐ: $x \\ge -3, x \\neq \\pm 1$. Tử số bằng 0 tại $x=1$. Triệt tiêu nhân tử $(x-1)$, mẫu còn lại $(x+1)$. Do đó $x=1$ không là TCĐ.",
+                "final_answer": "Đồ thị có 2 đường tiệm cận: TCĐ $x = -1$ và TCN $y = 0$."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "chuong_2": {
+      "title": "Chương 2: Hàm số lũy thừa, hàm số mũ và hàm số logarit",
+      "lessons": [
+        {
+          "lesson_name": "Lũy thừa và các tính chất",
+          "formulas": [
+            {
+              "id": "alg_c2_l1_1",
+              "name": "Các công thức biến đổi lũy thừa cốt lõi",
+              "latex_code": "a^m \\cdot a^n = a^{m+n}; \\quad \\frac{a^m}{a^n} = a^{m-n}; \\quad (a^m)^n = a^{m\\cdot n}; \\quad \\sqrt[n]{a^m} = a^{\\frac{m}{n}}",
+              "explanation": "Áp dụng với cơ số $a > 0$ và các số thực $m, n$ bất kỳ.",
+              "common_errors": "Nhầm lẫn giữa $(a^m)^n$ với $a^{m+n}$ hoặc quên điều kiện cơ số phải dương khi xét lũy thừa với số mũ hữu tỷ, số mũ thực.",
+              "memory_trick": "Nhân cộng mũ - Chia trừ mũ - Lũy thừa nhân mũ - Căn chia mũ.",
+              "example_basic": {
+                "question": "Rút gọn biểu thức $P = \\frac{a^{\\sqrt{3}+1} \\cdot a^{2-\\sqrt{3}}}{(a^{\\sqrt{2}-1})^{\\sqrt{2}+1}}$ với $a > 0$.",
+                "solution": "Tử số: $a^{(\\sqrt{3}+1)+(2-\\sqrt{3})} = a^3$. Mẫu số: $a^{(\\sqrt{2}-1)(\\sqrt{2}+1)} = a^{2-1} = a^1$. Khi đó $P = \\frac{a^3}{a^1} = a^{3-1}$.",
+                "final_answer": "$P = a^2$"
+              },
+              "example_advanced": {
+                "question": "Tìm tập xác định của hàm số $y = (x^2 - 3x + 2)^{\\pi}$.",
+                "solution": "Vì số mũ $\\pi$ là số thực không nguyên nên điều kiện cơ số phải dương: $x^2 - 3x + 2 > 0$.",
+                "final_answer": "$D = (-\\infty; 1) \\cup (2; +\\infty)$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Logarit và các tính chất",
+          "formulas": [
+            {
+              "id": "alg_c2_l2_1",
+              "name": "Các quy tắc tính và đổi cơ số logarit",
+              "latex_code": "\\log_a(b \\cdot c) = \\log_a b + \\log_a c; \\quad \\log_a(b^\\alpha) = \\alpha \\log_a b; \\quad \\log_a b = \\frac{\\log_c b}{\\log_c a}",
+              "explanation": "Điều kiện bắt buộc: Cơ số $a, c > 0, a, c \\neq 1$ và các biểu thức lấy logarit $b, c > 0$.",
+              "common_errors": "Biến đổi sai phép tính tổng: viết nhầm $\\log_a(b+c) = \\log_a b \\cdot \\log_a c$ hoặc quên đưa dấu trị tuyệt đối khi hạ số mũ chẵn.",
+              "memory_trick": "Log của Tích bằng Tổng các Log; Log của Thương bằng Hiệu các Log.",
+              "example_basic": {
+                "question": "Tính giá trị biểu thức $A = \\log_2 3 \\cdot \\log_3 4 + \\log_5 25$.",
+                "solution": "Áp dụng quy tắc đổi cơ số: $\\log_2 3 \\cdot \\log_3 4 = \\log_2 4 = 2$. Tính $\\log_5 25 = 2$. Vậy $A = 2 + 2$.",
+                "final_answer": "4"
+              },
+              "example_advanced": {
+                "question": "Cho $\\log_2 3 = a$. Tính $\\log_{12} 18$ theo a.",
+                "solution": "Biến đổi đổi cơ số về cơ số 2: $\\log_{12} 18 = \\frac{\\log_2 18}{\\log_2 12} = \\frac{\\log_2(2 \\cdot 3^2)}{\\log_2(2^2 \\cdot 3)} = \\frac{1 + 2\\log_2 3}{2 + \\log_2 3}$.",
+                "final_answer": "$\\frac{1+2a}{2+a}$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Hàm số mũ, lũy thừa và logarit",
+          "formulas": [
+            {
+              "id": "alg_c2_l3_1",
+              "name": "Đạo hàm của hàm số mũ và hàm số logarit",
+              "latex_code": "(a^x)' = a^x \\ln a; \\quad (e^x)' = e^x; \\quad (\\log_a x)' = \\frac{1}{x \\ln a}; \\quad (\\ln x)' = \\frac{1}{x}",
+              "explanation": "Đạo hàm hàm hợp tương ứng nhân thêm $u'$ vế trước (Ví dụ: $(e^u)' = u' \\cdot e^u$).",
+              "common_errors": "Nhầm lẫn đạo hàm hàm số mũ $(a^x)'$ với đạo hàm hàm số lũy thừa $(x^\\alpha)' = \\alpha x^{\\alpha-1}$. Quên nhân thêm $\\ln a$ ở mẫu đối với logarit.",
+              "memory_trick": "Mũ thì nhân thêm ln, Log thì chia cho ln.",
+              "example_basic": {
+                "question": "Tính đạo hàm của hàm số $y = 3^x + \\ln(2x)$.",
+                "solution": "Áp dụng công thức cơ bản: $(3^x)' = 3^x \\ln 3$. Đạo hàm hàm hợp: $(\\ln 2x)' = \\frac{(2x)'}{2x} = \\frac{2}{2x} = \\frac{1}{x}$.",
+                "final_answer": "$y' = 3^x \\ln 3 + \\frac{1}{x}$"
+              },
+              "example_advanced": {
+                "question": "Tính đạo hàm của hàm số $y = \\log_2(x^2 + 1)$.",
+                "solution": "Áp dụng đạo hàm hàm hợp logarit: $y' = \\frac{(x^2+1)'}{(x^2+1)\\ln 2}$.",
+                "final_answer": "$y' = \\frac{2x}{(x^2+1)\\ln 2}$"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "chuong_3": {
+      "title": "Chương 3: Nguyên hàm, Tích phân và Ứng dụng",
+      "lessons": [
+        {
+          "lesson_name": "Nguyên hàm và các phương pháp tìm nguyên hàm",
+          "formulas": [
+            {
+              "id": "alg_c3_l1_1",
+              "name": "Bảng nguyên hàm và phương pháp từng phần",
+              "latex_code": "\\int x^n \\, dx = \\frac{x^{n+1}}{n+1} + C \\; (n \\neq -1); \\quad \\int u \\, dv = u v - \\int v \\, du",
+              "explanation": "Nguyên hàm từng phần được ứng dụng khi tìm nguyên hàm tích của hai loại hàm số khác nhau (như đa thức nhân lượng giác/mũ/logarit).",
+              "common_errors": "Quên cộng hằng số C ở kết quả cuối cùng hoặc đặt sai thứ tự ưu tiên $u$ khi làm nguyên hàm từng phần.",
+              "memory_trick": "Thứ tự ưu tiên đặt u: 'Nhất lô, nhì đa, tam lượng, tứ mũ'.",
+              "example_basic": {
+                "question": "Tìm nguyên hàm $F(x) = \\int (x^2 - e^x) \\, dx$.",
+                "solution": "Tính riêng biệt từng số hạng dựa trên bảng nguyên hàm cơ bản.",
+                "final_answer": "$\\frac{x^3}{3} - e^x + C$"
+              },
+              "example_advanced": {
+                "question": "Tìm nguyên hàm $I = \\int x \\ln x \\, dx$.",
+                "solution": "Đặt $u = \\ln x \\Rightarrow du = \\frac{1}{x} dx$; đặt $dv = x \\, dx \\Rightarrow v = \\frac{x^2}{2}$. Áp dụng công thức từng phần: $I = \\frac{x^2}{2}\\ln x - \\int \\frac{x^2}{2} \\cdot \\frac{1}{x} \\, dx$.",
+                "final_answer": "$\\frac{x^2}{2}\\ln x - \\frac{x^2}{4} + C$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Tích phân và các tính chất",
+          "formulas": [
+            {
+              "id": "alg_c3_l2_1",
+              "name": "Công thức Newton-Leibniz và tính chất tích phân",
+              "latex_code": "\\int_a^b f(x) \\, dx = F(b) - F(a); \\quad \\int_a^b f(x) \\, dx = \\int_a^c f(x) \\, dx + \\int_c^b f(x) \\, dx",
+              "explanation": "Tích phân không phụ thuộc vào biến số đổi tên, chỉ phụ thuộc vào dạng hàm và các giá trị cận $a, b$.",
+              "common_errors": "Quên đổi cận khi thực hiện phương pháp đổi biến số ($u = t(x)$). Tính sai dấu khi đảo lộn cận thượng dưới.",
+              "memory_trick": "Tích phân lấy cận Trên trừ cận Dưới. Đổi biến là phải đổi cận ngay.",
+              "example_basic": {
+                "question": "Tính tích phân $I = \\int_0^1 (2x + 1) \\, dx$.",
+                "solution": "Nguyên hàm là $F(x) = x^2 + x$. Thế cận từ 0 đến 1: $F(1) - F(0) = (1^2+1) - (0^2+0)$.",
+                "final_answer": "2"
+              },
+              "example_advanced": {
+                "question": "Tính tích phân $I = \\int_0^{\\sqrt{3}} x\\sqrt{x^2+1} \\, dx$.",
+                "solution": "Đổi biến: Đặt $t = \\sqrt{x^2+1} \\Rightarrow t^2 = x^2+1 \\Rightarrow t \\, dt = x \\, dx$. Đổi cận: $x=0 \\Rightarrow t=1$; $x=\\sqrt{3} \\Rightarrow t=2$. Khi đó $I = \\int_1^2 t \\cdot t \\, dt = \\int_1^2 t^2 \\, dt$.",
+                "final_answer": "$\\frac{7}{3}$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Ứng dụng của tích phân hình học",
+          "formulas": [
+            {
+              "id": "alg_c3_l3_1",
+              "name": "Tính diện tích hình phẳng và thể tích vật thể tròn xoay",
+              "latex_code": "S = \\int_a^b |f(x) - g(x)| \\, dx; \\quad V = \\pi \\int_a^b [f(x)]^2 \\, dx",
+              "explanation": "Công thức diện tích áp dụng cho hình giới hạn bởi hai đồ thị. Công thức thể tích áp dụng cho khối tròn xoay tạo ra khi quay quanh trục Ox.",
+              "common_errors": "Quên dấu giá trị tuyệt đối $|...|$ khi tính diện tích làm kết quả bị âm, hoặc quên hằng số $\\pi$ ở công thức tính thể tích vật thể.",
+              "memory_trick": "Diện tích có trị tuyệt đối, Thể tích có pi nhân bình phương.",
+              "example_basic": {
+                "question": "Tính diện tích hình phẳng giới hạn bởi đồ thị $y = x^2 - 1$, trục hoành $Ox$ trên đoạn $[0; 2]$.",
+                "solution": "Phương trình nghiệm $x^2-1=0 \\Leftrightarrow x=1 \\in [0;2]$. Tách cận tích phân thành: $S = \\int_0^1 |x^2-1|dx + \\int_1^2 |x^2-1|dx$.",
+                "final_answer": "2"
+              },
+              "example_advanced": {
+                "question": "Tính thể tích khối tròn xoay sinh ra khi quay hình phẳng giới hạn bởi đồ thị $y = \\sqrt{x}e^x$, trục Ox, từ $x=0$ đến $x=1$ quanh trục Ox.",
+                "solution": "Áp dụng công thức: $V = \\pi \\int_0^1 (\\sqrt{x}e^x)^2 \\, dx = \\pi \\int_0^1 x e^{2x} \\, dx$. Tính tích phân này bằng phương pháp từng phần.",
+                "final_answer": "$\\frac{\\pi(e^2+1)}{4}$"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "geometry": {
+    "chuong_4": {
+      "title": "Chương 4: Vectơ và hệ trục tọa độ trong không gian",
+      "lessons": [
+        {
+          "lesson_name": "Hệ tọa độ và Các phép toán vectơ trong không gian",
+          "formulas": [
+            {
+              "id": "geo_c4_l1_1",
+              "name": "Biểu thức tọa độ của các phép toán vectơ và Tích vô hướng",
+              "latex_code": "\\vec{a}\\cdot\\vec{b} = a_1b_1 + a_2b_2 + a_3b_3; \\quad |\\vec{a}| = \\sqrt{a_1^2 + a_2^2 + a_3^2}",
+              "explanation": "Cho hai vectơ $\\vec{a}=(a_1;a_2;a_3)$ và $\\vec{b}=(b_1;b_2;b_3)$. Tích vô hướng giúp tính độ dài vectơ và góc giữa hai vectơ.",
+              "common_errors": "Nhầm lẫn giữa công thức tích vô hướng (ra một số số thực) với tích có hướng (ra một vectơ mới). Tính độ dài vectơ quên bình phương hoặc quên khai căn.",
+              "memory_trick": "Tích vô hướng: Hoành nhân hoành + Tung nhân tung + Cao nhân cao.",
+              "example_basic": {
+                "question": "Cho $\\vec{a} = (1; 2; -2)$ và $\\vec{b} = (2; 0; 3)$. Tính tích vô hướng $\\vec{a}\\cdot\\vec{b}$ và độ dài $|\\vec{a}|$.",
+                "solution": "$\\vec{a}\\cdot\\vec{b} = 1\\cdot2 + 2\\cdot0 + (-2)\\cdot3 = 2 + 0 - 6 = -4$. Độ dài $|\\vec{a}| = \\sqrt{1^2 + 2^2 + (-2)^2} = \\sqrt{9}$.",
+                "final_answer": "$\\vec{a}\\cdot\\vec{b} = -4$, $|\\vec{a}| = 3$."
+              },
+              "example_advanced": {
+                "question": "Tìm góc giữa hai vectơ $\\vec{u} = (1; 1; 0)$ và $\\vec{v} = (0; 1; 1)$.",
+                "solution": "Áp dụng công thức $\\cos(\\vec{u}, \\vec{v}) = \\frac{\\vec{u}\\cdot\\vec{v}}{|\\vec{u}|\\cdot|\\vec{v}|} = \\frac{1\\cdot0 + 1\\cdot1 + 0\\cdot1}{\\sqrt{1^2+1^2+0^2}\\cdot\\sqrt{0^2+1^2+1^2}} = \\frac{1}{2}$.",
+                "final_answer": "$60^\\circ$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Phương trình mặt phẳng và Phương trình đường thẳng",
+          "formulas": [
+            {
+              "id": "geo_c4_l2_1",
+              "name": "Phương trình tổng quát của Mặt phẳng và Tham số của Đường thẳng",
+              "latex_code": "(P): A(x-x_0) + B(y-y_0) + C(z-z_0) = 0; \\quad (d): \\begin{cases} x = x_0 + at \\\\ y = y_0 + bt \\\\ z = z_0 + ct \\end{cases}",
+              "explanation": "Mặt phẳng cần đi qua điểm $M_0(x_0;y_0;z_0)$ và có vectơ pháp tuyến $\\vec{n}=(A;B;C)$. Đường thẳng cần đi qua $M_0$ và có vectơ chỉ phương $\\vec{u}=(a;b;c)$.",
+              "common_errors": "Nhầm lẫn vai trò giữa vectơ pháp tuyến (vuông góc mp) và vectơ chỉ phương (song song/nằm trên đt). Viết phương trình tham số đường thẳng quên ghi điều kiện $t \\in \\mathbb{R}$.",
+              "memory_trick": "Mặt phẳng cần Pháp (Pháp tuyến vuông góc) - Đường thẳng cần Chỉ (Chỉ phương song song).",
+              "example_basic": {
+                "question": "Viết phương trình mặt phẳng $(P)$ đi qua $A(1; -2; 3)$ và có vectơ pháp tuyến $\\vec{n} = (2; 1; -4)$.",
+                "solution": "Áp dụng công thức: $2(x-1) + 1(y+2) - 4(z-3) = 0 \\Leftrightarrow 2x - 2 + y + 2 - 4z + 12 = 0$.",
+                "final_answer": "$2x + y - 4z + 12 = 0$"
+              },
+              "example_advanced": {
+                "question": "Viết phương trình đường thẳng $(d)$ đi qua điểm $M(1;2;3)$ và vuông góc với mặt phẳng $(Q): 2x - y + 3z - 5 = 0$.",
+                "solution": "Vì $(d) \\perp (Q)$ nên đường thẳng $(d)$ nhận luôn vectơ pháp tuyến của $(Q)$ là $\\vec{n}_{(Q)} = (2; -1; 3)$ làm vectơ chỉ phương $\\vec{u}_{(d)}$.",
+                "final_answer": "$(d): \\begin{cases} x = 1 + 2t \\\\ y = 2 - t \\\\ z = 3 + 3t \\end{cases} \\quad (t \\in \\mathbb{R})$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Phương trình mặt cầu",
+          "formulas": [
+            {
+              "id": "geo_matcau_1",
+              "name": "Phương trình mặt cầu dạng chính tắc và dạng tổng quát",
+              "latex_code": "(x-a)^2 + (y-b)^2 + (z-c)^2 = R^2 \\Leftrightarrow x^2+y^2+z^2-2ax-2by-2cz+d=0",
+              "explanation": "Mặt cầu có tâm $I(a; b; c)$ và bán kính $R = \\sqrt{a^2+b^2+c^2-d}$ (với điều kiện $a^2+b^2+c^2-d > 0$).",
+              "common_errors": "Nhầm dấu của tọa độ tâm khi lấy từ phương trình chính tắc ra hoặc quên chia hệ số đứng trước x,y,z cho -2 khi ở dạng tổng quát.",
+              "memory_trick": "Tâm đổi dấu - Vế phải khai căn. Dạng tổng quát chia cho âm hai.",
+              "example_basic": {
+                "question": "Xác định tâm và bán kính của mặt cầu $(S): (x-1)^2 + y^2 + (z+2)^2 = 9$.",
+                "solution": "Đối chiếu trực tiếp với phương trình dạng chính tắc để suy ra tâm và bán kính.",
+                "final_answer": "Tâm $I(1; 0; -2)$, bán kính $R = 3$."
+              },
+              "example_advanced": {
+                "question": "Viết phương trình mặt cầu đi qua điểm $A(1;1;1)$ và có tâm $I(2;3;-1)$.",
+                "solution": "Bán kính $R = IA = \\sqrt{(2-1)^2 + (3-1)^2 + (-1-1)^2} = 3$. Lắp vào phương trình chính tắc dạng tâm I.",
+                "final_answer": "$(x-2)^2 + (y-3)^2 + (z+1)^2 = 9$"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "chuong_5": {
+      "title": "Chương 5: Các số đặc trưng đo xu thế trung tâm cho mẫu số liệu ghép nhóm",
+      "lessons": [
+        {
+          "lesson_name": "Khoảng biến thiên và Khoảng tứ phân vị",
+          "formulas": [
+            {
+              "id": "geo_c5_l1_1",
+              "name": "Đo độ phân tán: Khoảng biến thiên (R) và Khoảng tứ phân vị ($\\Delta_Q$)",
+              "latex_code": "R = x_{\\max} - x_{\\min}; \\quad \\Delta_Q = Q_3 - Q_1",
+              "explanation": "Dùng để đo mức độ phân tán của mẫu số liệu ghép nhóm. Khoảng biến thiên dựa trên hai đầu mút nhóm, khoảng tứ phân vị dựa trên hiệu số giữa tứ phân vị thứ ba và thứ nhất.",
+              "common_errors": "Lấy nhầm giá trị tần số ($f$) để trừ thay vì lấy giá trị phân định nhóm ($x$). Tính sai vị trí các nhóm chứa $Q_1, Q_3$.",
+              "memory_trick": "Biến thiên lấy mút cuối trừ mút đầu. Tứ phân vị lấy anh ba trừ anh một.",
+              "example_basic": {
+                "question": "Cho mẫu số liệu ghép nhóm có nhóm đầu tiên là $[10; 15)$ và nhóm cuối cùng là $[35; 40)$. Tìm khoảng biến thiên R.",
+                "solution": "Giá trị lớn nhất có thể của mẫu là biên phải của nhóm cuối cùng ($x_{\\max} = 40$). Giá trị nhỏ nhất là biên trái của nhóm đầu tiên ($x_{\\min} = 10$). Tính $R = 40 - 10$.",
+                "final_answer": "$R = 30$"
+              },
+              "example_advanced": {
+                "question": "Tính khoảng tứ phân vị $\\Delta_Q$ của mẫu số liệu biết kết quả nội suy cho ra $Q_1 = 18.5$ và $Q_3 = 24.2$.",
+                "solution": "Áp dụng trực tiếp công thức tính hiệu độ phân tán tứ phân vị: $\\Delta_Q = Q_3 - Q_1 = 24.2 - 18.5$.",
+                "final_answer": "$\\Delta_Q = 5.7$"
+              }
+            }
+          ]
+        },
+        {
+          "lesson_name": "Phương sai và Độ lệch chuẩn",
+          "formulas": [
+            {
+              "id": "geo_c5_l2_1",
+              "name": "Phương sai ($s^2$) và Độ lệch chuẩn ($s$) của mẫu ghép nhóm",
+              "latex_code": "s^2 = \\frac{1}{n} \\sum_{i=1}^k n_i(c_i - \\bar{x})^2; \\quad s = \\sqrt{s^2}",
+              "explanation": "Trong đó $n$ là tổng số số liệu, $n_i$ là tần số nhóm $i$, $c_i$ là giá trị đại diện của nhóm $i$ (trung điểm khoảng ghép nhóm), và $\\bar{x}$ là số trung bình.",
+              "common_errors": "Quên không tính giá trị đại diện $c_i$ (cộng đầu cuối khoảng chia đôi) mà dùng luôn giá trị biên để nhân tính toán.",
+              "memory_trick": "Độ lệch chuẩn là căn bậc hai của phương sai. Phương sai là trung bình của bình phương các độ lệch.",
+              "example_basic": {
+                "question": "Tính giá trị đại diện $c_i$ của nhóm số liệu thực tế $[20; 30)$.",
+                "solution": "Giá trị đại diện bằng trung bình cộng hai đầu mút của khoảng ghép nhóm: $c_i = \\frac{20 + 30}{2}$.",
+                "final_answer": "$c_i = 25$"
+              },
+              "example_advanced": {
+                "question": "Một mẫu số liệu ghép nhóm có phương sai tính được là $s^2 = 1.44$. Xác định độ lệch chuẩn $s$ của mẫu này.",
+                "solution": "Độ lệch chuẩn là căn bậc hai số học của phương sai: $s = \\sqrt{s^2} = \\sqrt{1.44} = 1.2$.",
+                "final_answer": "$s = 1.2$"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

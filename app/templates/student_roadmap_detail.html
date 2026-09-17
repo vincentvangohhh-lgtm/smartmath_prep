@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-journal-bookmark"></i> Lộ Trình Học Tập: {{ student.username }}</h2>
+        <a href="{{ url_for('main.teacher_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại Dashboard
+        </a>
+    </div>
+
+    <!-- Thông tin tổng quan học sinh -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Thông tin học sinh</h5>
+            <div class="row">
+                <div class="col-md-4"><strong>Email:</strong> {{ student.email }}</div>
+                <div class="col-md-4"><strong>Năng lực IRT ($\theta$):</strong> {{ "%.2f"|format(student.theta_ability or 0.0) }}</div>
+                <div class="col-md-4"><strong>Lớp / Trường:</strong> {{ student.grade or 'N/A' }} - {{ student.school or 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách lộ trình -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Chi tiết lộ trình các dạng toán</h5>
+        </div>
+        <div class="card-body">
+            {% if roadmaps %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>STT</th>
+                                <th>Chủ đề / Dạng toán</th>
+                                <th>Trạng thái</th>
+                                <th>Điểm master (%)</th>
+                                <th>Cập nhật lần cuối</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in roadmaps %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ item.topic_name }}</td>
+                                <td>
+                                    {% if item.status == 'completed' %}
+                                        <span class="badge bg-success">Đã hoàn thành</span>
+                                    {% elif item.status == 'in_progress' %}
+                                        <span class="badge bg-warning text-dark">Đang học</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Chưa bắt đầu</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.mastery_level or 0 }}%</td>
+                                <td>{{ item.updated_at.strftime('%d/%m/%Y %H:%M') if item.updated_at else '---' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted text-center my-3">Học sinh này chưa có dữ liệu lộ trình học tập.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

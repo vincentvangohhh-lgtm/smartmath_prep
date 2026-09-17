@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- CỘT BÊN TRÁI: THÔNG TIN TỔNG QUAN BÀI THI -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center border-0 shadow rounded-4 p-4 bg-white sticky-top" style="top: 20px; z-index: 1000;">
+                <h3 class="fw-bold text-primary mb-3">Kết Quả Bài Làm</h3>
+                <div class="display-3 fw-bold text-success mb-2">{{ result.score }}</div>
+                <p class="text-muted">Thang điểm 10</p>
+                <hr>
+                <div class="text-start fs-6">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Số câu đúng:</span> 
+                        <strong>{{ result.total_correct }} / {{ result.total_questions }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Thời gian làm bài:</span> 
+                        <strong>{{ result.duration_seconds // 60 }} phút {{ result.duration_seconds % 60 }} giây</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Năng lực hiện tại:</span> 
+                        <span class="badge bg-warning text-dark fw-bold">{{ current_user.current_level if current_user and current_user.current_level else 'Khá' }}</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('exam.dashboard') }}" class="btn btn-primary w-100 fw-bold mt-4 shadow-sm">Về Bảng Điều Khiển</a>
+            </div>
+        </div>
+
+        <!-- CỘT BÊN PHẢI: CHI TIẾT ĐÁP ÁN & LỜI GIẢI 18 CÂU -->
+        <div class="col-md-8">
+            <h4 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-list-check me-2"></i>Chi Tiết Đáp Án & Lời Giải</h4>
+            
+            {% for q in questions %}
+                <div class="card p-4 border-0 shadow-sm rounded-4 mb-3 {% if q.is_correct %}border-start border-5 border-success{% else %}border-start border-5 border-danger{% endif %}">
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                        <span class="fw-bold text-secondary">
+                            Câu hỏi {{ loop.index }} 
+                            <small class="badge bg-info text-white ms-2">{{ q.question_type }}</small>
+                        </span>
+                        <span class="badge bg-light text-dark border">{{ q.concept_code }}</span>
+                    </div>
+                    
+                    <!-- Nội dung câu hỏi chính -->
+                    <div class="fw-semibold text-dark mb-3">{{ q.content | safe }}</div>
+                    
+                    <!-- RENDER THEO TỪNG PHÂN LOẠI CÂU HỎI -->
+                    {% if q.question_type == 'PART_I' %}
+                        <!-- Phần I: Trắc nghiệm 4 lựa chọn -->
+                        <div class="row text-muted fs-6 mb-3 px-2">
+                            <div class="col-md-6 mb-1 {% if q.user_answer == 'A' %}fw-bold text-dark{% endif %}">A. {{ q.option_a | safe }}</div>
+                            <div class="col-md-6 mb-1 {% if q.user_answer == 'B' %}fw-bold text-dark{% endif %}">B. {{ q.option_b | safe }}</div>
+                            <div class="col-md-6 mb-1 {% if q.user_answer == 'C' %}fw-bold text-dark{% endif %}">C. {{ q.option_c | safe }}</div>
+                            <div class="col-md-6 mb-1 {% if q.user_answer == 'D' %}fw-bold text-dark{% endif %}">D. {{ q.option_d | safe }}</div>
+                        </div>
+
+                    {% elif q.question_type == 'PART_II' %}
+                        <!-- Phần II: Đúng / Sai 4 ý độc lập -->
+                        <div class="border rounded-3 p-3 bg-white mb-3 fs-6">
+                            {% set user_subs = q.user_answer.split('|') if q.user_answer else ['Bỏ trống', 'Bỏ trống', 'Bỏ trống', 'Bỏ trống'] %}
+                            {% set correct_subs = q.correct_answer.split('|') if q.correct_answer else ['', '', '', ''] %}
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+                                <span>a) {{ q.sub_q_a | safe }}</span>
+                                <div>
+                                    <span class="badge bg-light text-dark border">Bạn: {{ user_subs[0] }}</span>
+                                    <span class="badge bg-success text-white">Đúng: {{ correct_subs[0] }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+                                <span>b) {{ q.sub_q_b | safe }}</span>
+                                <div>
+                                    <span class="badge bg-light text-dark border">Bạn: {{ user_subs[1] }}</span>
+                                    <span class="badge bg-success text-white">Đúng: {{ correct_subs[1] }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+                                <span>c) {{ q.sub_q_c | safe }}</span>
+                                <div>
+                                    <span class="badge bg-light text-dark border">Bạn: {{ user_subs[2] }}</span>
+                                    <span class="badge bg-success text-white">Đúng: {{ correct_subs[2] }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>d) {{ q.sub_q_d | safe }}</span>
+                                <div>
+                                    <span class="badge bg-light text-dark border">Bạn: {{ user_subs[3] }}</span>
+                                    <span class="badge bg-success text-white">Đúng: {{ correct_subs[3] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- KHU VỰC ĐÁP ÁN TỔNG HỢP VÀ LỜI GIẢI CHI TIẾT -->
+                    <div class="bg-light p-3 rounded-3 border-top mt-2">
+                        <div class="mb-1">
+                            Đáp án của bạn: 
+                            <strong class="{% if q.is_correct %}text-success{% else %}text-danger{% endif %}">
+                                {% if q.question_type == 'PART_II' %}
+                                    Lịch sử chọn xem ở khung trên
+                                {% else %}
+                                    {{ q.user_answer if q.user_answer else 'Bỏ trống' }}
+                                {% endif %}
+                            </strong>
+                            {% if q.is_correct %}
+                                <span class="text-success ms-2"><i class="fa-solid fa-circle-check"></i> Chính xác</span>
+                            {% else %}
+                                <span class="text-danger ms-2"><i class="fa-solid fa-circle-xmark"></i> Chưa đúng</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if q.question_type != 'PART_II' %}
+                            <div class="mb-2">Đáp án đúng của hệ thống: <strong class="text-success">{{ q.correct_answer }}</strong></div>
+                        {% endif %}
+                        
+                        <!-- Hiển thị Lời giải chi tiết động từ Database -->
+                        {% if q.solution_details %}
+                            <div class="mt-2 text-secondary pt-2 border-top">
+                                <strong class="text-dark"><i class="fa-solid fa-lightbulb text-warning me-1"></i> Lời giải chi tiết:</strong>
+                                <div class="mt-1 solution-content">{{ q.solution_details | safe }}</div>
+                            </div>
+                        {% else %}
+                            <div class="mt-2 text-muted pt-2 border-top fs-7 italic">
+                                <i class="fa-solid fa-info-circle"></i> Hệ thống đang cập nhật đồ thị lời giải cho dạng bài này.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

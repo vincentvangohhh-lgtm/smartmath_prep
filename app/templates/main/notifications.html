@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Tất Cả Thông Báo - Math 12A3{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 850px;">
+    <!-- TIÊU ĐỀ CHÍNH BỌC KHUNG NỀN TRẮNG BO TRÒN GÓC NỔI BẬT -->
+    <div class="card p-3 p-md-4 rounded-4 shadow-sm border-0 mb-4" style="background-color: var(--bg-card, #ffffff);">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="fw-bold text-primary mb-0">
+                <i class="fa-solid fa-bell text-warning me-2"></i>Tất cả thông báo hệ thống
+            </h3>
+            <button class="btn btn-sm btn-outline-warning text-dark fw-bold rounded-pill px-3" onclick="markAllNotificationsRead()">
+                Đánh dấu tất cả đã đọc
+            </button>
+        </div>
+    </div>
+
+    <!-- Danh sách toàn bộ thông báo từ trước đến nay -->
+    <div class="d-flex flex-column gap-3">
+        {% if notifications %}
+            {% for n in notifications %}
+                <div class="card shadow-sm border-0 rounded-4 p-3 transition-hover" style="background-color: var(--bg-card, #ffffff);">
+                    <div class="d-flex align-items-start gap-3">
+                        <!-- Icon Logo Cá voi thay thế vương miệng -->
+                        <img src="{{ url_for('static', filename='images/logo_12A3_3.png') }}" 
+                             alt="Logo Cá Voi" 
+                             class="rounded-circle border border-primary p-1 flex-shrink-0" 
+                             style="width: 48px; height: 48px; object-fit: cover; background-color: #ffffff;">
+                        
+                        <!-- Nội dung thông báo -->
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold mb-1 text-primary">{{ n.title }}</h5>
+                            <p class="text-secondary mb-2" style="font-size: 14px; line-height: 1.5;">
+                                {{ n.content }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-warning fw-bold small">
+                                    <i class="fa-regular fa-clock me-1"></i>{{ n.created_at.strftime('%H:%M ngày %d/%m/%Y') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                <i class="fa-regular fa-bell-slash text-muted display-4 mb-3"></i>
+                <h5 class="text-muted fw-bold">Chưa có thông báo nào</h5>
+                <p class="text-muted small">Các cập nhật nâng cấp từ Admin sẽ xuất hiện tại đây.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

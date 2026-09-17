@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Trang Chủ - Math 12A3 - Ôn Thi Toán THPT Quốc Gia{% endblock %}
+
+{% block content %}
+<style>
+    /* Gradient Chuẩn (#5de0e6 -> #004aad) */
+    .bg-gradient-math {
+        background: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
+    }
+
+    .text-gradient-primary {
+        background: linear-gradient(90deg, #004aad 0%, #5de0e6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Hero Wave Background */
+    .hero-section {
+        position: relative;
+        background: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
+        color: white;
+        padding: 40px 0 100px 0;
+        overflow: hidden;
+    }
+
+    .hero-wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        line-height: 0;
+    }
+
+    /* Styling Card Vinh Danh Top 1-2-3 */
+    .vinhdanh-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+    }
+
+    .vinhdanh-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 74, 173, 0.12);
+    }
+
+    /* ĐẶC BIỆT CHO TOP 1 NỔI BẬT NẰM GIỮA */
+    .vinhdanh-top1 {
+        transform: scale(1.05);
+        border: 2px solid #ffb703;
+        box-shadow: 0 15px 40px rgba(255, 183, 3, 0.25);
+    }
+
+    .vinhdanh-top1:hover {
+        transform: scale(1.08) translateY(-5px);
+    }
+
+    /* Badge Top 1, 2, 3 */
+    .badge-top1 { background: linear-gradient(45deg, #ffb703, #fb8500); color: white; font-weight: bold; }
+    .badge-top2 { background: linear-gradient(45deg, #94a3b8, #64748b); color: white; font-weight: bold; }
+    .badge-top3 { background: linear-gradient(45deg, #f97316, #ea580c); color: white; font-weight: bold; }
+
+    .avatar-vinhdanh {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .avatar-top1 {
+        width: 110px;
+        height: 110px;
+        border: 4px solid #ffb703;
+    }
+
+    /* Card Tính năng thi & Nút Công thức */
+    .feature-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(93, 224, 230, 0.2);
+    }
+</style>
+
+<!-- 1. HERO SECTION BANNER -->
+<section class="hero-section">
+    <!-- NÚT KHÔI PHỤC BONG BÓNG AI (ĐẶT GỌN GÀNG, CÂN ĐỐI NẰM NGAY TRONG BANNER) -->
+    <div class="container text-center mb-4">
+        <button type="button" onclick="restoreAiBubble()" class="btn text-white fw-bold rounded-pill px-4 py-2 shadow-sm" style="background: rgba(255, 255, 255, 0.2); border: 1.5px solid rgba(255, 255, 255, 0.5); font-size: 13.5px; backdrop-filter: blur(5px);">
+            <i class="fa-solid fa-robot me-2"></i> Mở lại bong bóng Trợ lý AI
+        </button>
+    </div>
+
+    <script>
+        function restoreAiBubble() {
+            localStorage.removeItem('ai_bubble_closed');
+            const widget = document.getElementById('ai-chat-widget');
+            if (widget) {
+                widget.style.display = 'block';
+                widget.style.bottom = '25px';
+                widget.style.right = '25px';
+                widget.style.left = 'auto';
+                widget.style.top = 'auto';
+            }
+            alert('Đã khôi phục bong bóng Trợ lý AI thành công!');
+        }
+    </script>
+
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7 text-start">
+                <span class="badge bg-white text-primary px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm">
+                    ✨ Nền tảng Ôn thi Toán THPT 2026
+                </span>
+                <h1 class="display-4 fw-bold mb-3" style="line-height: 1.2;">
+                    Chinh Phục Điểm 9+ Môn Toán Dễ Dàng Cùng <span class="text-warning">Math 12A3</span>
+                </h1>
+                <p class="fs-5 opacity-90 mb-4" style="max-width: 600px;">
+                    Hệ thống luyện thi thông minh tích hợp Đấu trường trắc nghiệm, Đề thi thích ứng IRT và Diễn đàn thảo luận hỏi đáp cùng bạn bè.
+                </p>
+
+                <!-- 🟢 NÚT LỐI TẮT BẢNG QUẢN LÝ HỌC SINH (CHỈ ADMIN VÀ GIÁO VIÊN MỚI THẤY) -->
+                {% if current_user.is_authenticated and current_user.role in ['admin', 'teacher'] %}
+                    <div class="mb-4">
+                        <a href="{{ url_for('main.teacher_dashboard') }}" 
+                           class="btn btn-warning text-dark fw-bold rounded-pill px-4 py-3 shadow-lg d-inline-flex align-items-center gap-2">
+                            <i class="fa-solid fa-users-gear fs-5"></i>
+                            <span>Bảng Quản Lý Học Sinh</span>
+                            <i class="fa-solid fa-arrow-right small ms-1"></i>
+                        </a>
+                    </div>
+                {% endif %}
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('main.forum_page') }}" class="btn btn-light text-primary btn-lg rounded-pill fw-bold px-4 py-3 shadow">
+                        <i class="fa-solid fa-comments me-2"></i>Vào Diễn Đàn Thảo Luận
+                    </a>
+                    <a href="#danh-sach-de-thi" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4 py-3">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>Luyện Đề Ngay
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 text-center">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop" 
+                     alt="Math 12A3 Student" 
+                     class="img-fluid rounded-4 shadow-lg border border-3 border-white"
+                     style="max-height: 380px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Đường Sóng SVG Bo Cong Hiện Đại ở Đáy Banner -->
+    <div class="hero-wave">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 60C240 100 480 120 720 80C960 40 1200 20 1440 60V120H0V60Z" fill="#ffffff"/>
+        </svg>
+    </div>
+</section>
+
+<div class="container my-5" id="danh-sach-de-thi">
+    
+    <!-- 2. SECTION CHẾ ĐỘ ÔN THI & CÔNG THỨC TOÁN -->
+    <div class="text-center mb-5">
+        <h6 class="text-primary fw-bold text-uppercase" style="letter-spacing: 1px;">Chế Độ Luyện Tập & Tra Cứu</h6>
+        <h2 class="fw-bold text-dark">Lựa Chọn Hình Thức Đổi Mới</h2>
+    </div>
+
+    <!-- HÀNG 1: 4 TÍNH NĂNG SINH ĐỀ THI TỰ ĐỘNG -->
+    <div class="row g-4 mb-4">
+        
+        <!-- NÚT 1: THI ĐỀ 22 CÂU -->
+        <div class="col-md-3">
+            <form action="{{ url_for('exam.generate') }}" method="POST" class="h-100">
+                <input type="hidden" name="exam_type" value="standard_22">
+                <button type="submit" class="feature-card text-center h-100 bg-white border border-primary border-opacity-25">
+                    <div class="rounded-circle bg-light d-inline-flex p-3 mb-3 text-primary fs-3">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Thi Đề 22 Câu</h5>
+                    <p class="text-muted small mb-0">Luyện tập tổng hợp kiến thức toán học chuẩn cấu trúc.</p>
+                </button>
+            </form>
+        </div>
+
+        <!-- NÚT 2: ĐẤU TRƯỜNG 15 CÂU -->
+        <div class="col-md-3">
+            <form action="{{ url_for('exam.generate') }}" method="POST" class="h-100">
+                <input type="hidden" name="exam_type" value="millionaire">
+                <button type="submit" class="feature-card text-center h-100 bg-white border border-warning border-opacity-50">
+                    <div class="rounded-circle bg-light d-inline-flex p-3 mb-3 text-warning fs-3">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Đấu Trường 15 Câu</h5>
+                    <p class="text-muted small mb-0">Thử thách kịch tính phong cách Ai Là Triệu Phú.</p>
+                </button>
+            </form>
+        </div>
+
+        <!-- NÚT 3: THI THÍCH ỨNG -->
+        <div class="col-md-3">
+            <form action="{{ url_for('exam.generate') }}" method="POST" class="h-100">
+                <input type="hidden" name="exam_type" value="adaptive_18">
+                <button type="submit" class="feature-card text-center h-100 bg-white border border-info border-opacity-50">
+                    <div class="rounded-circle bg-light d-inline-flex p-3 mb-3 text-info fs-3">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Thi Thích Ứng</h5>
+                    <p class="text-muted small mb-0">Tự động điều chỉnh độ khó theo năng lực học sinh.</p>
+                </button>
+            </form>
+        </div>
+
+        <!-- NÚT 4: ĐỀ CHÍNH THỨC THPT -->
+        <div class="col-md-3">
+            <form action="{{ url_for('exam.generate') }}" method="POST" class="h-100">
+                <input type="hidden" name="exam_type" value="official">
+                <input type="hidden" name="year" value="2025">
+                <input type="hidden" name="code_id" value="random">
+                <button type="submit" class="feature-card text-center h-100 bg-white border border-success border-opacity-50">
+                    <div class="rounded-circle bg-light d-inline-flex p-3 mb-3 text-success fs-3">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Đề THPT (Giao diện A4)</h5>
+                    <p class="text-muted small mb-0">Mô phỏng 100% trang giấy thi chính thức Bộ GD&ĐT.</p>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- HÀNG 2: 2 NÚT CÔNG THỨC ĐẠI SỐ & HÌNH HỌC -->
+    <div class="row justify-content-center g-4 mb-5">
+        <div class="col-md-5 col-lg-4">
+            <a href="{{ url_for('exam.formula_layout') }}?type=algebra" class="feature-card text-center h-100 border border-primary border-opacity-50">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex p-3 mb-3 text-primary fs-3">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">📐 Công Thức Đại Số</h5>
+                <p class="text-muted small mb-0">Tra cứu nhanh toàn bộ công thức Hàm số, Mũ - Logarit, Tích phân & Đạo hàm.</p>
+            </a>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+            <a href="{{ url_for('exam.formula_layout') }}?type=geometry" class="feature-card text-center h-100 border border-info border-opacity-50">
+                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex p-3 mb-3 text-info fs-3">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">🔷 Công Thức Hình Học</h5>
+                <p class="text-muted small mb-0">Tổng hợp định lý Hình học không gian 11-12, Thể tích khối đa diện & Oxyz.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================================== -->
+    <!-- 3. SECTION VINH DANH HỌC VIÊN XUẤT SẮC (TOP 1, TOP 2, TOP 3) -->
+    <!-- ============================================================================== -->
+    <div class="my-5 pt-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-dark">
+                Vinh Danh <span class="text-warning">Học Viên Xuất Sắc</span>
+            </h2>
+            <p class="text-muted fs-6">Niềm tự hào của Math 12A3 với những thành tích thi thử vượt trội</p>
+        </div>
+
+        <div class="row align-items-center justify-content-center g-4 my-3">
+            
+            <!-- TOP 2 (BÊN TRÁI) - UTA -->
+            <div class="col-md-4 col-lg-3 text-center order-2 order-md-1">
+                <div class="vinhdanh-card p-4">
+                    <div class="position-relative d-inline-block mb-3">
+                        <img src="{{ url_for('static', filename='images/top2.png') }}" class="avatar-vinhdanh" alt="Top 2 - Uta">
+                        <span class="badge badge-top2 position-absolute bottom-0 start-50 translate-middle-x px-3 py-1 rounded-pill small shadow-sm">
+                            Top 2
+                        </span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">Uta</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-graduation-cap me-1"></i>Học viên Xuất sắc</p>
+
+                    <div class="bg-light rounded-3 p-3">
+                        <div class="text-muted small fw-bold text-uppercase">Tổng Điểm Thi</div>
+                        <div class="fs-3 fw-bold text-primary">28.0 <span class="fs-6 text-muted">/30</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP 1 (NẰM GIỮA) - QUỐC ANH -->
+            <div class="col-md-4 col-lg-4 text-center order-1 order-md-2">
+                <div class="vinhdanh-card vinhdanh-top1 p-4">
+                    <div class="position-relative d-inline-block mb-3">
+                        <i class="fa-solid fa-crown text-warning fs-2 position-absolute top-0 start-50 translate-middle-x" style="margin-top: -28px;"></i>
+                        <img src="{{ url_for('static', filename='images/top1.png') }}" class="avatar-vinhdanh avatar-top1" alt="Top 1 - Quốc Anh">
+                        <span class="badge badge-top1 position-absolute bottom-0 start-50 translate-middle-x px-3 py-1 rounded-pill small shadow">
+                            🥇 Top 1
+                        </span>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-1">Quốc Anh</h4>
+                    <p class="text-warning fw-semibold small mb-3"><i class="fa-solid fa-star me-1"></i>Thủ Khoa Hệ Thống</p>
+
+                    <div class="bg-warning bg-opacity-10 rounded-3 p-3 border border-warning border-opacity-25">
+                        <div class="text-muted small fw-bold text-uppercase">Tổng Điểm Thi</div>
+                        <div class="display-6 fw-bold text-warning">29.5 <span class="fs-6 text-muted">/30</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP 3 (BÊN PHẢI) - NAM -->
+            <div class="col-md-4 col-lg-3 text-center order-3 order-md-3">
+                <div class="vinhdanh-card p-4">
+                    <div class="position-relative d-inline-block mb-3">
+                        <img src="{{ url_for('static', filename='images/top3.png') }}" class="avatar-vinhdanh" alt="Top 3 - Nam">
+                        <span class="badge badge-top3 position-absolute bottom-0 start-50 translate-middle-x px-3 py-1 rounded-pill small shadow-sm">
+                            Top 3
+                        </span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">Nam</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-graduation-cap me-1"></i>Học viên Xuất sắc</p>
+
+                    <div class="bg-light rounded-3 p-3">
+                        <div class="text-muted small fw-bold text-uppercase">Tổng Điểm Thi</div>
+                        <div class="fs-3 fw-bold text-primary">27.5 <span class="fs-6 text-muted">/30</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,638 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Phân Tích Năng Lực AI - Math 12A3{% endblock %}
+
+{% block content %}
+<!-- LỚP NỀN XÁM NHẠT TOÀN TRANG GIÚP CÁC KHỐI CARD NỔI BẬT RÕ RÀNG -->
+<div class="container-fluid bg-secondary bg-opacity-10 py-4 min-vh-100">
+<div class="container">
+
+    <!-- ⏰ KHU VỰC: LỊCH TRÌNH ÔN THI ĐẾM NGƯỢC, STREAK & CHECKLIST -->
+    <div class="row g-4 mb-4">
+        <!-- Cột trái: Đồng hồ đếm ngược & Widget Streak Ngọn Lửa -->
+        <div class="col-lg-5">
+            <div class="d-flex flex-column gap-3 h-100">
+                <!-- Đồng hồ đếm ngược -->
+                <div class="card border-0 shadow rounded-4 p-4 text-white" style="background: linear-gradient(135deg, #004aad 0%, #5de0e6 100%);">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold mb-0"><i class="fa-solid fa-hourglass-half me-2"></i>Đếm Ngược Kỳ Thi THPT</h5>
+                        <span class="badge bg-white text-primary fw-bold px-3 py-1 rounded-pill">2027</span>
+                    </div>
+                    <div class="row text-center g-2 my-auto">
+                        <div class="col-3">
+                            <div class="bg-white rounded-3 p-2 shadow-sm">
+                                <h3 id="cd-days" class="fw-bold mb-0 text-dark">00</h3>
+                                <small class="text-secondary fw-semibold" style="font-size: 11px;">Ngày</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="bg-white rounded-3 p-2 shadow-sm">
+                                <h3 id="cd-hours" class="fw-bold mb-0 text-dark">00</h3>
+                                <small class="text-secondary fw-semibold" style="font-size: 11px;">Giờ</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="bg-white rounded-3 p-2 shadow-sm">
+                                <h3 id="cd-mins" class="fw-bold mb-0 text-dark">00</h3>
+                                <small class="text-secondary fw-semibold" style="font-size: 11px;">Phút</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="bg-white rounded-3 p-2 shadow-sm">
+                                <h3 id="cd-secs" class="fw-bold mb-0 text-dark">00</h3>
+                                <small class="text-secondary fw-semibold" style="font-size: 11px;">Giây</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <<!-- 🔥 WIDGET STREAK NGỌN LỬA ÔN TẬP LIÊN TIẾP ĐÃ PHÓNG TO CHỮ -->
+                <div class="card border-0 shadow rounded-4 p-3 text-dark streak-widget-card" style="background: linear-gradient(135deg, #fffbeb 0%, #fff1f2 100%); border: 1.5px solid rgba(248, 113, 113, 0.35) !important;">
+                    <div class="d-flex align-items-center justify-content-between flex-nowrap gap-2">
+                        <div class="d-flex align-items-center gap-2 overflow-hidden">
+                            <div class="fs-2 text-danger animate-pulse d-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded-circle flex-shrink-0" style="width: 45px; height: 45px;">
+                                <i class="fa-solid fa-fire-flame-curved"></i>
+                            </div>
+                            <div class="text-truncate">
+                                <h6 class="fw-bold mb-0 text-dark text-truncate" style="font-size: 14.5px;">Chuỗi Ôn Tập Liên Tục</h6>
+                                <p class="text-muted small mb-0 text-truncate" style="font-size: 12px;">Duy trì phong độ mỗi ngày!</p>
+                            </div>
+                        </div>
+                        <div class="text-end flex-shrink-0 ps-1 d-flex align-items-baseline gap-1">
+                            <span id="streak-count" class="fw-black mb-0" style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">1</span>
+                            <span class="text-danger fw-bold" style="font-size: 2rem; white-space: nowrap;">ngày 🔥</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Checklist nhiệm vụ tuần -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-list-check text-success me-2"></i><span id="current-week-label">Checklist Nhiệm Vụ Tuần</span></h5>
+                    <span class="badge bg-warning text-dark">AI Gợi Ý</span>
+                </div>
+                <p class="text-muted small mb-3">Hoàn thành các mục tiêu dưới đây để bám sát lộ trình cá nhân hóa:</p>
+                <div class="d-flex flex-column gap-2" id="weekly-tasks-container">
+                    <!-- Tasks load here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHU VỰC 1: THÔNG TIN TỔNG QUAN & DỰ ĐOÁN ĐIỂM AI -->
+    <div class="row mb-4">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="card shadow border-0 rounded-4 text-center p-4 h-100 bg-white">
+                <div class="d-inline-flex align-items-center justify-content-center bg-light text-primary rounded-circle p-3 mb-3 mx-auto" style="width: 60px; height: 60px;">
+                    <i class="fa-solid fa-brain fa-2x"></i>
+                </div>
+                <h4 class="fw-bold text-dark">Dự Đoán Điểm Thi THPT</h4>
+                <p class="text-muted small">Phân tích bằng AI dựa trên điểm định vị năng lực liên tục</p>
+                <h1 class="display-3 fw-black text-danger my-3">
+                    {{ '%.2f' | format(profile.predicted_thpt_score) if profile and profile.predicted_thpt_score else '0.00' }}
+                </h1>
+                <div class="d-flex justify-content-center">
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold fs-6">
+                        Năng lực: {{ user.current_level if user and user.current_level else 'Yếu' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-4 h-100 bg-white">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-route me-2 text-warning"></i>Lộ Trình Ôn Tập Riêng Biệt Theo Năng Lực</h5>
+                    <span class="badge bg-info text-white">AI Cá Nhân Hóa</span>
+                </div>
+                <div class="card-body px-4 pt-2">
+                    <div class="row timeline-steps">
+                        {% if user.current_level == 'Giỏi' %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=1) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-success border-3 shadow-sm transition-box">
+                                    <strong class="text-success d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 1: Vận dụng cao Hàm số</strong>
+                                    <small class="text-muted d-block mb-2">Chinh phục cực trị chứa dấu giá trị tuyệt đối liên hoàn và tiệm cận chứa căn thức.</small>
+                                    <span class="badge bg-success-light text-success rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=2) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-success border-3 shadow-sm transition-box">
+                                    <strong class="text-success d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 2: Hệ phương trình Logarit VIP</strong>
+                                    <small class="text-muted d-block mb-2">Tối ưu phương pháp hàm đặc trưng giải các hệ mũ - logarit phân hóa điểm 9+.</small>
+                                    <span class="badge bg-success-light text-success rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=3) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-success border-3 shadow-sm transition-box">
+                                    <strong class="text-success d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 3: Max-Min Hình Oxyz</strong>
+                                    <small class="text-muted d-block mb-2">Cực trị hình học không gian sử dụng tâm tỉ cự và kỹ thuật mặt cầu bất đẳng thức.</small>
+                                    <span class="badge bg-success-light text-success rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% elif user.current_level == 'Khá' %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=1) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-primary border-3 shadow-sm transition-box">
+                                    <strong class="text-primary d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 1: Biện luận Cực trị</strong>
+                                    <small class="text-muted d-block mb-2">Xử lý bài toán tìm tham số m để hàm số bậc 3, bậc 4 có n điểm cực trị.</small>
+                                    <span class="badge bg-primary-light text-primary rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=2) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-primary border-3 shadow-sm transition-box">
+                                    <strong class="text-primary d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 2: Biến đổi Mũ & Logarit</strong>
+                                    <small class="text-muted d-block mb-2">Làm chủ các công thức đổi cơ số nâng cao và giải bất phương trình tích.</small>
+                                    <span class="badge bg-primary-light text-primary rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=3) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-primary border-3 shadow-sm transition-box">
+                                    <strong class="text-primary d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 3: Góc & Khoảng cách Oxyz</strong>
+                                    <small class="text-muted d-block mb-2">Tính toán nhanh góc giữa hai mặt phẳng, khoảng cách từ điểm đến mặt phẳng.</small>
+                                    <span class="badge bg-primary-light text-primary rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=1) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-danger border-3 shadow-sm transition-box">
+                                    <strong class="text-danger d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 1: Cực trị Hàm số cơ bản</strong>
+                                    <small class="text-muted d-block mb-2">Nhận diện dứt điểm cực đại, cực tiểu dựa trên bảng biến thiên và đồ thị $f(x), f'(x)$.</small>
+                                    <span class="badge bg-danger-light text-danger rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=2) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-warning border-3 shadow-sm transition-box">
+                                    <strong class="text-warning d-block mb-1" style="color:#d97706 !important;"><i class="fa-solid fa-circle-play me-1"></i> Ngày 2: Tập xác định Logarit</strong>
+                                    <small class="text-muted d-block mb-2">Ghi nhớ điều kiện cơ số và biểu thức lấy logarit để tránh bẫy tập xác định.</small>
+                                    <span class="badge bg-warning-light text-warning rounded-pill px-2 py-1 small" style="color: #d97706 !important; background-color: #fef3c7;">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('exam.roadmap_practice', day_id=3) }}" class="text-decoration-none text-dark d-block h-100 roadmap-interactive-card">
+                                <div class="p-3 bg-light rounded-3 h-100 border-start border-info border-3 shadow-sm transition-box">
+                                    <strong class="text-info d-block mb-1"><i class="fa-solid fa-circle-play me-1"></i> Ngày 3: Tọa độ điểm & Vector Oxyz</strong>
+                                    <small class="text-muted d-block mb-2">Nắm chắc công thức cộng trừ vector, độ dài đoạn thẳng và tọa độ trung điểm, trọng tâm.</small>
+                                    <span class="badge bg-info-light text-info rounded-pill px-2 py-1 small">🎯 Ôn luyện 15 câu &rarr;</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <form action="{{ url_for('exam.generate') }}" method="POST" class="mt-3 pt-3 border-top">
+                        <div class="row align-items-end">
+                            <div class="col-md-7 mb-2 mb-md-0">
+                                <label class="form-label fw-bold text-secondary small mb-1">Cấu hình thuật toán sinh đề:</label>
+                                <select class="form-select border-2 bg-transparent text-dark fw-semibold" id="exam_type" name="exam_type">
+                                    <option value="official" selected>🏛️ Đề Thi Chính Thức Bộ GD&ĐT (Lựa chọn Năm & Mã đề gốc 2025-2026)</option>
+                                    <option value="standard_22">📝 Thi Chuẩn THPT Quốc Gia (22 Câu - Quy chế Bộ GD&ĐT)</option>
+                                    <option value="adaptive_18" class="text-dark">⚡Thi rút gọn (18 Câu khảo sát năng lực thích ứng - Chuẩn)</option>
+                                    <option value="millionaire" class="text-dark">🏆 Ai Là Triệu Phú Toán Học (15 Cột mốc leo tháp)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm py-2">
+                                    🎯 Sinh Đề Thi Thích Ứng Mới
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHU VỰC 2: HỆ THỐNG BIỂU ĐỒ PHÂN TÍCH ĐA CHIỀU -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 rounded-4 h-100 bg-white">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Ma Trận Kỹ Năng Kế Thừa AI</h5>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                    <div style="width: 100%; max-height: 280px; position: relative;">
+                        <canvas id="radarAbilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 rounded-4 h-100 bg-white">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-line me-2 text-success"></i>Xu Hướng Điểm Số & Tiến Độ Học Tập</h5>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                    <div style="width: 100%; max-height: 280px; position: relative;">
+                        <canvas id="lineProgressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHU VỰC 3: BẢNG LỊCH SỬ LÀM BÀI CHI TIẾT -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow border-0 rounded-4 mb-4 bg-white">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-clock-history me-2 text-info"></i>Lịch Sử Làm Bài Gần Đây</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-center text-dark">
+                            <thead class="table-light text-secondary small text-uppercase">
+                                <tr>
+                                    <th class="text-start">Tên đề / Phân loại bài thi</th>
+                                    <th>Mã số đề</th>
+                                    <th>Thời gian làm bài</th>
+                                    <th>Số câu đúng</th>
+                                    <th>Điểm số hệ thống</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if results %}
+                                    {% for r in results %}
+                                    <tr>
+                                        <td class="text-start fw-semibold text-dark">
+                                            <i class="fa-solid fa-file-signature text-primary me-2"></i>
+                                            {% if r.exam_type == 'millionaire' %}
+                                                🏆 Ai Là Triệu Phú Toán Học
+                                            {% else %}
+                                                Bài khảo sát định vị năng lực đầu vào
+                                            {% endif %}
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border">#{{ r.exam_id }}</span></td>
+                                        <td class="text-muted">
+                                            {{ r.duration_seconds // 60 }} phút {{ r.duration_seconds % 60 }} giây
+                                        </td>
+                                        <td class="fw-bold text-primary">
+                                            {{ r.total_correct }} / {{ r.total_questions }}
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if r.score >= 6.5 %}bg-success{% elif r.score >= 5.0 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-1">
+                                                {{ r.score }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('exam.retry_exam', exam_id=r.id) }}" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold me-1" title="Làm lại cấu hình đúng vấn đề này">
+                                                <i class="fa-solid fa-rotate-right me-1"></i> Làm lại
+                                            </a>    
+                                            <a href="{{ url_for('exam.exam_result', result_id=r.id) }}" 
+                                            class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                                <i class="fa-solid fa-eye me-1"></i>Xem giải
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <div class="my-2"><i class="fa-solid fa-folder-open fa-2x text-light"></i></div>
+                                            Bạn chưa thực hiện bài thi khảo sát nào. Hãy nhấn nút sinh đề phía bên trái để AI phân tích năng lực!
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHU VỰC 4: CỐ VẤN HỌC TẬP AI -->
+    <div class="card shadow-sm mb-4 border-info">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">🎓 Cố Vấn Học Tập AI (Đánh giá cá nhân hóa)</h5>
+            <button id="load-ai-advice-btn" class="btn btn-light btn-sm text-dark fw-bold">Làm mới phân tích</button>
+        </div>
+        <div class="card-body">
+            <div id="ai-advice-content">
+                <p class="text-muted">Bấm vào nút "Làm mới phân tích" để Cố vấn AI tổng hợp năng lực và đưa ra chiến lược ôn thi THPT Quốc gia dành riêng cho bạn!</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .roadmap-interactive-card {
+        transition: all 0.25s ease-in-out;
+    }
+    .roadmap-interactive-card:hover .transition-box {
+        transform: translateY(-4px);
+        box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .bg-success-light { background-color: rgba(25, 135, 84, 0.15) !important; }
+    .bg-primary-light { background-color: rgba(13, 110, 253, 0.15) !important; }
+    .bg-danger-light { background-color: rgba(220, 53, 69, 0.15) !important; }
+    
+    @keyframes pulseFlame {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(220, 53, 69, 0.6)); }
+        100% { transform: scale(1); }
+    }
+    .animate-pulse {
+        animation: pulseFlame 1.8s infinite ease-in-out;
+    }
+
+    [data-theme="dark"] .table-light {
+        background-color: #2d2d2d !important;
+        color: #f8f9fa !important;
+    }
+    [data-theme="dark"] .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const roadmapWeeks = [
+        { title: "Tuần 1: Hàm Số & Khảo Sát Đồ Thị", tasks: ["Ôn tập chuyên đề Hàm số & Khảo sát đồ thị (Làm ít nhất 30 câu trắc nghiệm).", "Tra cứu và ghi nhớ ít nhất 15 công thức Hình học không gian trong Thư viện.", "Tham gia thảo luận và giải đáp 1 bài toán khó trên Diễn đàn."] },
+        { title: "Tuần 2: Tính Đơn Điệu & Cực Trị", tasks: ["Luyện tập các bài toán về tính đơn điệu và cực trị của hàm số.", "Xem lại hệ thống định lý về thể tích khối chóp và lăng trụ.", "Đăng một câu hỏi thắc mắc về đồ thị hàm số lên Diễn đàn."] },
+        { title: "Tuần 3: GTLN - GTNN & Khoảng Cách", tasks: ["Chinh phục dạng toán tìm giá trị lớn nhất, nhỏ nhất (Max - Min) của hàm số trên đoạn.", "Ôn tập kỹ năng tính khoảng cách từ điểm đến mặt phẳng.", "Đọc và góp ý lời giải cho bài toán hình học của bạn học khác."] },
+        { title: "Tuần 4: Tiệm Cận & Góc Trong Không Gian", tasks: ["Giải quyết các bài toán tiệm cận đứng, tiệm cận ngang có chứa tham số.", "Ôn tập xác định góc giữa đường thẳng và mặt phẳng.", "Thực hiện bài thi thử thích ứng rút gọn 18 câu trên hệ thống."] },
+        { title: "Tuần 5: Tổng Ôn Chương I & Mặt Cầu", tasks: ["Tổng ôn chương I (Hàm số và ứng dụng đạo hàm) với 35 câu trắc nghiệm tổng hợp.", "Tra cứu công thức tính bán kính mặt cầu ngoại tiếp khối chóp.", "Chia sẻ mẹo nhớ công thức nhanh lên Diễn đàn chung."] },
+        { title: "Tuần 6: Khởi Động Mũ & Logarit", tasks: ["Bắt đầu chuyên đề Mũ & Logarit: Ôn tập toàn bộ công thức biến đổi cơ bản.", "Luyện tập 20 câu phương trình mũ đưa về cùng cơ số.", "Tham gia trả lời các câu hỏi ôn tập chương Hàm số trên Diễn đàn."] },
+        { title: "Tuần 7: Bất Phương Trình Mũ - Logarit", tasks: ["Chinh phục bất phương trình mũ và logarit có điều kiện xác định.", "Tra cứu chuyên đề góc giữa hai mặt phẳng vuông góc trong Thư viện.", "Hoàn thành 1 bài luyện tập cá nhân hóa do hệ thống AI đề xuất."] },
+        { title: "Tuần 8: Tham Số M & Tỷ Lệ Thể Tích", tasks: ["Rèn luyện kỹ năng giải phương trình, bất phương trình logarit chứa tham số m.", "Ôn tập công thức tỷ lệ thể tích khối đa diện.", "Thảo luận 1 bài toán mũ - logarit vận dụng cao trên Diễn đàn."] },
+        { title: "Tuần 9: Hàm Đặc Trưng & Kiểm Định", tasks: ["Làm chủ kỹ thuật 'Hàm đặc trưng' trong giải toán mũ và logarit.", "Ôn tập khối đa diện đều và các tính chất đối xứng.", "Thực hiện bài kiểm tra định kỳ chuyên đề Mũ & Logarit."] },
+        { title: "Tuần 10: Nhập Môn Tích Phân", tasks: ["Chuyên đề Tích phân: Luyện tập phương pháp tính tích phân đổi biến số (Đặt ẩn phụ).", "Tra cứu và ghi nhớ hệ thống công thức nguyên hàm cơ bản.", "Đăng bài toán tích phân hay tìm được lên Diễn đàn để đố mọi người."] },
+        { title: "Tuần 11: Tích Phân Từng Phần & Oxyz", tasks: ["Rèn luyện kỹ năng tính tích phân từng phần (Đa thức kết hợp lượng giác/mũ).", "Ôn tập phương pháp toạ độ hoá trong không gian để giải hình học không gian.", "Giải đáp ít nhất 1 bài toán tích phân cho thành viên khác."] },
+        { title: "Tuần 12: Ứng Dụng Hình Học Tích Phân", tasks: ["Ứng dụng tích phân tính diện tích hình phẳng giới hạn bởi các đường cong.", "Ôn tập các công thức tính nhanh thể tích khối tròn xoay.", "Thực hiện bài luyện tập phản xạ nhanh 15 câu tích phân."] },
+        { title: "Tuần 13: Tích Phân Hàm Ẩn & Oxyz Cơ Bản", tasks: ["Chinh phục các bài toán tích phân hàm ẩn nâng cao (Mức độ vận dụng cao).", "Tra cứu các dạng toán Oxyz cơ bản (Toạ độ điểm, vector).", "Chia sẻ tài liệu tự học hoặc ghi chú công thức lên Diễn đàn."] },
+        { title: "Tuần 14: Tổng Ôn Học Kỳ I", tasks: ["Tổng ôn tập toàn bộ chương Tích phân và ứng dụng hình học.", "Luyện tập viết phương trình mặt phẳng trong không gian Oxyz.", "Làm bài khảo sát năng lực học kỳ I trên hệ thống."] },
+        { title: "Tuần 15: Ôn Tập Kiểm Tra Học Kỳ I", tasks: ["Ôn tập chuẩn bị cho kỳ thi đánh giá năng lực/kiểm tra học kỳ I môn Toán.", "Rà soát Sổ tay công thức cá nhân toàn bộ các chương đã học.", "Gửi lời chúc thi tốt và tương tác động viên bạn bè trên Diễn đàn."] }
+    ];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const examDate = new Date("May 31, 2027 07:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = examDate - now;
+
+            if (distance < 0) {
+                document.getElementById("cd-days").innerText = "00";
+                document.getElementById("cd-hours").innerText = "00";
+                document.getElementById("cd-mins").innerText = "00";
+                document.getElementById("cd-secs").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("cd-days").innerText = String(days).padStart(2, '0');
+            document.getElementById("cd-hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("cd-mins").innerText = String(mins).padStart(2, '0');
+            document.getElementById("cd-secs").innerText = String(secs).padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function updateStreak() {
+            const todayStr = new Date().toDateString();
+            let lastActiveDate = localStorage.getItem("math12a3_last_active");
+            let currentStreak = parseInt(localStorage.getItem("math12a3_streak") || "1", 10);
+
+            if (!lastActiveDate) {
+                localStorage.setItem("math12a3_last_active", todayStr);
+                localStorage.setItem("math12a3_streak", "1");
+                currentStreak = 1;
+            } else {
+                const lastDate = new Date(lastActiveDate);
+                const currentDate = new Date(todayStr);
+                const diffTime = currentDate - lastDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    currentStreak += 1;
+                    localStorage.setItem("math12a3_streak", currentStreak);
+                    localStorage.setItem("math12a3_last_active", todayStr);
+                } else if (diffDays > 1) {
+                    currentStreak = 1;
+                    localStorage.setItem("math12a3_streak", "1");
+                    localStorage.setItem("math12a3_last_active", todayStr);
+                }
+            }
+            document.getElementById("streak-count").innerText = currentStreak;
+        }
+        updateStreak();
+
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24));
+        const currentWeekIndex = Math.floor(dayOfYear / 7) % roadmapWeeks.length;
+        const activeWeek = roadmapWeeks[currentWeekIndex];
+
+        document.getElementById("current-week-label").innerText = activeWeek.title;
+        const tasksContainer = document.getElementById("weekly-tasks-container");
+        let tasksHTML = "";
+
+        activeWeek.tasks.forEach((taskDesc, idx) => {
+            const taskStorageKey = `phase1_week${currentWeekIndex}_task${idx}`;
+            const isCompleted = localStorage.getItem(taskStorageKey) === "true";
+
+            tasksHTML += `
+                <div class="form-check p-3 rounded-3 border bg-light d-flex align-items-center gap-3 mb-0">
+                    <input class="form-check-input fs-5 ms-0 mt-0" type="checkbox" id="task_${idx}" ${isCompleted ? 'checked' : ''} onchange="localStorage.setItem('${taskStorageKey}', this.checked)">
+                    <label class="form-check-label fw-semibold text-dark flex-grow-1 cursor-pointer" for="task_${idx}">
+                        ${taskDesc}
+                    </label>
+                </div>
+            `;
+        });
+        tasksContainer.innerHTML = tasksHTML;
+
+        const scoreHistory = [];
+        const labelHistory = [];
+        
+        {% if results %}
+            {% for r in results | reverse %}
+                scoreHistory.push({{ r.score }});
+                labelHistory.push("Lần {{ loop.index }}");
+            {% endfor %}
+        {% else %}
+            scoreHistory.push(0);
+            labelHistory.push("Chưa thi");
+        {% endif %}
+
+        const baseAbility = parseFloat("{{ profile.predicted_thpt_score if profile else 5.0 }}");
+        const factor = baseAbility / 10.0;
+
+        const abilityData = [
+            Math.round(minMax(factor * 95, 10, 100)), 
+            Math.round(minMax(factor * 90, 10, 100)), 
+            Math.round(minMax(factor * 85, 5, 100)),  
+            Math.round(minMax(factor * 80, 5, 100)),  
+            Math.round(minMax(factor * 75, 5, 100)),  
+            Math.round(minMax(factor * 70, 5, 100))   
+        ];
+
+        function minMax(val, min, max) {
+            return Math.min(Math.max(val, min), max);
+        }
+
+        function resultsCount() {
+            return {% if results %} {{ results|length }} {% else %} 0 {% endif %};
+        }
+
+        function getChartColors() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            return {
+                text: isDark ? '#e0e0e0' : '#495057',
+                grid: isDark ? '#333333' : '#e9ecef',
+                angleLines: isDark ? '#444444' : '#e9ecef'
+            };
+        }
+
+        const colors = getChartColors();
+
+        const ctxRadar = document.getElementById('radarAbilityChart').getContext('2d');
+        const alignedAbilityData = resultsCount() > 0 ? [
+            abilityData[0], 
+            abilityData[1], 
+            abilityData[2], 
+            abilityData[4], 
+            abilityData[5], 
+            abilityData[3]  
+        ] : [0, 0, 0, 0, 0, 0];
+
+        const radarChart = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Hàm số & Đạo hàm', 'Mũ & Logarit', 'Tích phân & Nguyên hàm', 'Xác suất & Thống kê', 'Hình không gian', 'Tọa độ Oxyz'],
+                datasets: [{
+                    label: 'Mức độ làm chủ (%)',
+                    data: alignedAbilityData,
+                    backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                    borderColor: 'rgba(41, 128, 185, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(41, 128, 185, 1)',
+                    pointBorderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: colors.text } }
+                },
+                scales: { 
+                    r: { 
+                        min: 0, 
+                        max: 100, 
+                        ticks: { 
+                            display: true, 
+                            stepSize: 20,
+                            color: colors.text,
+                            showLabelBackdrop: false,
+                            font: { size: 10 }
+                        },
+                        grid: { 
+                            display: true,
+                            color: document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)',
+                            circular: false, 
+                            lineWidth: 1
+                        },
+                        angleLines: { 
+                            display: true,
+                            color: document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)',
+                            lineWidth: 1
+                        },
+                        pointLabels: { 
+                            color: colors.text, 
+                            font: { size: 11, fontWeight: 'bold' } 
+                        }
+                    } 
+                }
+            }
+        });
+
+        const ctxLine = document.getElementById('lineProgressChart').getContext('2d');
+        const lineChart = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: labelHistory,
+                datasets: [{
+                    label: 'Điểm số đạt được (Thang 10)',
+                    data: scoreHistory,
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: colors.text } }
+                },
+                scales: {
+                    y: { 
+                        min: 0, 
+                        max: 10, 
+                        ticks: { stepSize: 2, color: colors.text },
+                        grid: { color: colors.grid }
+                    },
+                    x: {
+                        ticks: { color: colors.text },
+                        grid: { color: colors.grid }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    document.getElementById('load-ai-advice-btn').addEventListener('click', async function() {
+        const container = document.getElementById('ai-advice-content');
+        container.innerHTML = `<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Đang phân tích chỉ số năng lực IRT và lịch sử làm bài của bạn...`;
+        
+        try {
+            const response = await fetch('/api/ai/advice');
+            const data = await response.json();
+            
+            if(data.status === 'success') {
+                container.innerHTML = `
+                    <p class="mb-2"><strong>Điểm dự đoán THPT Quốc Gia:</strong> <span class="badge bg-success fs-6">${data.predicted_score} / 10</span></p>
+                    <hr>
+                    <div style="white-space: pre-line;" class="text-dark">${data.advice}</div>
+                `;
+            } else {
+                container.innerHTML = `<p class="text-danger">Không thể tải dữ liệu cố vấn học tập.</p>`;
+            }
+        } catch(e) {
+            container.innerHTML = `<p class="text-danger">Lỗi kết nối tới máy chủ AI.</p>`;
+        }
+    });
+</script>
+{% endblock %}

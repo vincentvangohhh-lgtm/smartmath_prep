@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Hồ sơ cá nhân - {{ user.username }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Nút Chỉnh sửa ảnh bìa kiểu Facebook */
+    .edit-cover-btn {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        background-color: #ffffff;
+        color: #050505;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 7px 14px;
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        z-index: 5;
+    }
+
+    .edit-cover-btn:hover {
+        background-color: #f0f2f5;
+        transform: scale(1.02);
+    }
+
+    /* Styling Avatar Wrapper & Dropdown Popover */
+    .avatar-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .avatar-img-box {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 4px solid #ffffff;
+        object-fit: cover;
+        background-color: #ffc107;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        cursor: pointer;
+        image-rendering: -webkit-optimize-contrast;
+    }
+
+    .avatar-camera-btn {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        background: #3a3b3c;
+        color: #ffffff;
+        border: 2px solid #ffffff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .avatar-camera-btn:hover {
+        transform: scale(1.1);
+        background: #4e4f50;
+    }
+
+    .avatar-popover-menu {
+        background-color: #242526 !important;
+        border: 1px solid #3e4042 !important;
+        border-radius: 12px !important;
+        width: 240px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+        padding: 6px;
+    }
+
+    .avatar-popover-item {
+        color: #e4e6eb !important;
+        padding: 10px 14px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+    .avatar-popover-item:hover {
+        background-color: #3a3b3c !important;
+        color: #ffffff !important;
+    }
+
+    /* Modal Styling */
+    .modal-dark-custom .modal-content {
+        background-color: #242526;
+        color: #e4e6eb;
+        border-radius: 16px;
+        border: 1px solid #3e4042;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .btn-upload-blue {
+        background-color: #2d88ff;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px 20px;
+        border: none;
+        transition: background 0.2s;
+    }
+
+    .btn-upload-blue:hover {
+        background-color: #1a73e8;
+        color: white;
+    }
+</style>
+
+<div class="container my-4" style="max-width: 950px;">
+    
+    <!-- CARD CHÍNH BANNER + AVATAR + THỐNG KÊ -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
+        
+        <!-- BANNER PHONG CẢNH BẢO TRỜI / ẢNH BÌA TỰ CHỌN -->
+        <div class="position-relative" style="height: 250px; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('{% if user.cover_image %}{{ url_for('static', filename='uploads/covers/' + user.cover_image) }}{% else %}https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1000&auto=format&fit=crop{% endif %}') center/cover no-repeat;">
+            
+            <!-- NÚT CHỈNH SỬA ẢNH BÌA KIỂU FACEBOOK -->
+            <button class="edit-cover-btn" data-bs-toggle="modal" data-bs-target="#uploadCoverModal">
+                <i class="fa-solid fa-camera fs-6"></i>
+                <span>Chỉnh sửa ảnh bìa</span>
+            </button>
+
+            <!-- AVATAR & THÔNG TIN USER NẰM ĐÈ LÊN BANNER -->
+            <div class="position-absolute bottom-0 start-0 p-4 d-flex align-items-center gap-3 w-100">
+                
+                <!-- CỤM AVATAR CÓ NÚT BẤM ĐỔI -->
+                <div class="avatar-container dropdown">
+                    {% if user.avatar %}
+                        <img src="{{ url_for('static', filename='uploads/avatars/' + user.avatar) }}" 
+                             alt="Avatar" 
+                             class="avatar-img-box" 
+                             id="avatarDropdownBtn" 
+                             data-bs-toggle="dropdown" 
+                             aria-expanded="false">
+                    {% else %}
+                        <div class="avatar-img-box d-flex align-items-center justify-content-center fw-bold text-dark fs-2" 
+                             id="avatarDropdownBtn" 
+                             data-bs-toggle="dropdown" 
+                             aria-expanded="false">
+                            {{ (user.username[0] if user.username else 'H')|upper }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Nút icon camera góc dưới avatar -->
+                    <div class="avatar-camera-btn" data-bs-toggle="dropdown" aria-expanded="false" title="Đổi ảnh đại diện">
+                        <i class="fa-solid fa-camera" style="font-size: 14px;"></i>
+                    </div>
+
+                    <!-- DROPDOWN POPOVER MENU (XEM / CHỌN ÁNH) -->
+                    <div class="dropdown-menu avatar-popover-menu" aria-labelledby="avatarDropdownBtn">
+                        <div class="avatar-popover-item" data-bs-toggle="modal" data-bs-target="#viewAvatarModal">
+                            <i class="fa-regular fa-user fs-5"></i>
+                            <span>Xem ảnh đại diện</span>
+                        </div>
+                        <div class="avatar-popover-item" data-bs-toggle="modal" data-bs-target="#uploadAvatarModal">
+                            <i class="fa-regular fa-images fs-5"></i>
+                            <span>Chọn ảnh đại diện</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TÊN NGƯỜI DÙNG -->
+                <div class="text-white ms-2">
+                    <h3 class="fw-bold mb-0 text-shadow">{{ user.username or (user.email.split('@')[0] if user.email else 'Học sinh') }}</h3>
+                    <small class="opacity-75">{{ user.email }}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- THỐNG KÊ BÀI VIẾT VÀ TÀI LIỆU -->
+        <div class="row g-0 text-center border-top py-3">
+            <div class="col-6 border-end">
+                <div class="fw-bold text-warning fs-4">0</div>
+                <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Bài viết</div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold text-warning fs-4">0</div>
+                <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Tài liệu</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHU VỰC NỘI DUNG PHÍA DƯỚI -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <h6 class="fw-bold text-primary mb-1">Thông tin cá nhân</h6>
+                <p class="text-muted small mb-0">Chưa có thông tin.</p>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white min-vh-25 d-flex align-items-center justify-content-center">
+                <p class="text-muted small mb-0">Người dùng này chưa có bài viết nào.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================================== -->
+<!-- MODAL CHỌN ÁNH BÌA TẢI LÊN -->
+<!-- ============================================================================== -->
+<div class="modal fade modal-dark-custom" id="uploadCoverModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom border-secondary py-3">
+                <h5 class="modal-header-title fw-bold text-center w-100 mb-0">Chỉnh sửa ảnh bìa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <form action="{{ url_for('main.upload_cover') }}" method="POST" enctype="multipart/form-data" id="coverForm">
+                    <input type="file" name="cover" id="coverFileInput" accept="image/*" class="d-none" onchange="previewCover(event)">
+                    
+                    <!-- Xem trước Ảnh Bìa -->
+                    <div id="coverPreviewContainer" class="mb-4 d-none overflow-hidden rounded-3 shadow">
+                        <img id="coverPreviewImg" src="#" alt="Preview Cover" class="w-100" style="height: 200px; object-fit: cover;">
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <button type="button" class="btn btn-upload-blue w-100 py-2" onclick="document.getElementById('coverFileInput').click()">
+                            <i class="fa-solid fa-plus me-2"></i>Tải ảnh bìa lên
+                        </button>
+                    </div>
+
+                    <button type="submit" id="submitCoverBtn" class="btn btn-success w-100 mt-3 fw-bold rounded-3 d-none">
+                        <i class="fa-solid fa-check me-2"></i>Lưu thay đổi ảnh bìa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CHỌN ÁNH ĐẠI DIỆN TẢI LÊN -->
+<div class="modal fade modal-dark-custom" id="uploadAvatarModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom border-secondary py-3">
+                <h5 class="modal-header-title fw-bold text-center w-100 mb-0">Chọn ảnh đại diện</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <form action="{{ url_for('main.upload_avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
+                    <input type="file" name="avatar" id="avatarFileInput" accept="image/*" class="d-none" onchange="previewAvatar(event)">
+                    
+                    <div id="avatarPreviewContainer" class="mb-4 d-none">
+                        <img id="avatarPreviewImg" src="#" alt="Preview" class="rounded-circle shadow" style="width: 140px; height: 140px; object-fit: cover; border: 3px solid #2d88ff;">
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <button type="button" class="btn btn-upload-blue w-100 py-2" onclick="document.getElementById('avatarFileInput').click()">
+                            <i class="fa-solid fa-plus me-2"></i>Tải ảnh lên
+                        </button>
+                    </div>
+
+                    <button type="submit" id="submitAvatarBtn" class="btn btn-success w-100 mt-3 fw-bold rounded-3 d-none">
+                        <i class="fa-solid fa-check me-2"></i>Lưu ảnh đại diện
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL XEM ÁNH ĐẠI DIỆN -->
+<div class="modal fade modal-dark-custom" id="viewAvatarModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom border-secondary py-2">
+                <h6 class="modal-title fw-bold text-white mb-0">Ảnh đại diện</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                {% if user.avatar %}
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + user.avatar) }}" alt="Avatar" class="img-fluid rounded-circle shadow" style="max-width: 260px; max-height: 260px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded-circle bg-warning text-dark d-inline-flex align-items-center justify-content-center fw-bold fs-1 shadow" style="width: 200px; height: 200px;">
+                        {{ (user.username[0] if user.username else 'H')|upper }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const coverModal = document.getElementById('uploadCoverModal');
+        const uploadModal = document.getElementById('uploadAvatarModal');
+        const viewModal = document.getElementById('viewAvatarModal');
+        if (coverModal) document.body.appendChild(coverModal);
+        if (uploadModal) document.body.appendChild(uploadModal);
+        if (viewModal) document.body.appendChild(viewModal);
+    });
+
+    function previewCover(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('coverPreviewImg').src = e.target.result;
+                document.getElementById('coverPreviewContainer').classList.remove('d-none');
+                document.getElementById('submitCoverBtn').classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function previewAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarPreviewImg').src = e.target.result;
+                document.getElementById('avatarPreviewContainer').classList.remove('d-none');
+                document.getElementById('submitAvatarBtn').classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+{% endblock %}

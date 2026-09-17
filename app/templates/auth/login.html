@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Đăng Nhập - Math 12A3{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #0f172a !important;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(93, 224, 230, 0.25) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(0, 74, 173, 0.35) 0px, transparent 50%) !important;
+        min-height: 100vh;
+    }
+
+    .auth-split-card {
+        background: #ffffff;
+        border-radius: 28px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 980px;
+        margin: 40px auto;
+    }
+
+    .auth-art-side {
+        background: linear-gradient(135deg, #004aad 0%, #5de0e6 100%);
+        position: relative;
+        overflow: hidden;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 48px;
+    }
+
+    .auth-art-side::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%),
+                    radial-gradient(circle at 70% 70%, rgba(93, 224, 230, 0.4) 0%, transparent 60%);
+        filter: blur(40px);
+        animation: floatWave 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatWave {
+        0% { transform: rotate(0deg) scale(1); }
+        100% { transform: rotate(10deg) scale(1.1); }
+    }
+
+    .custom-auth-input {
+        border-radius: 14px;
+        padding: 12px 16px 12px 42px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .custom-auth-input:focus {
+        border-color: #004aad;
+        box-shadow: 0 0 0 4px rgba(0, 74, 173, 0.15);
+    }
+
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .btn-auth-submit {
+        background: linear-gradient(90deg, #004aad 0%, #0066cc 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        padding: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 8px 20px rgba(0, 74, 173, 0.25);
+        transition: all 0.2s ease;
+    }
+
+    .btn-auth-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(0, 74, 173, 0.35);
+        color: #ffffff;
+    }
+
+    /* 🟢 FIX MÀN XÁM MODAL */
+    .modal-backdrop {
+        z-index: 1050 !important;
+    }
+    .modal {
+        z-index: 1060 !important;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="auth-split-card row g-0">
+        
+        <!-- NỬA BÊN TRÁI: FORM ĐĂNG NHẬP -->
+        <div class="col-lg-6 p-4 p-md-5 bg-white d-flex flex-column justify-content-center">
+            
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <img src="{{ url_for('static', filename='images/logo_12A3_3.png') }}" 
+                         style="width: 42px; height: 42px; border-radius: 50%; background-color: #ffffff; border: 2px solid #ffffff; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" 
+                         alt="Logo Math 12A3">
+                    <span class="fw-bold fs-4 text-dark">Math 12A3</span>
+                </div>
+                <h3 class="fw-bold text-dark">Chào Mừng Trở Lại! 👋</h3>
+                <p class="text-muted small">Cá nhân hóa lộ trình ôn thi Toán THPT Quốc Gia cùng AI</p>
+            </div>
+
+            <form action="{{ url_for('auth.login') }}" method="POST">
+                
+                <!-- Email -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">Địa chỉ Email</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" name="email" class="form-control custom-auth-input" placeholder="nhapemail@domain.com" required>
+                    </div>
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-secondary mb-0">Mật khẩu</label>
+                        <!-- NÚT QUÊN MẬT KHẨU MỞ MODAL THÔNG BÁO -->
+                        <button type="button" class="btn btn-link p-0 small text-primary text-decoration-none fw-semibold border-0" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+                            Quên mật khẩu?
+                        </button>
+                    </div>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" class="form-control custom-auth-input" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <!-- Ghi nhớ mật khẩu -->
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label small text-secondary" for="rememberMe">
+                        Ghi nhớ đăng nhập trên thiết bị này
+                    </label>
+                </div>
+
+                <!-- Nút Đăng Nhập -->
+                <button type="submit" class="btn btn-auth-submit w-100 mb-4">
+                    Vào Hệ Thống <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+                </button>
+
+                <!-- Chuyển sang Đăng ký -->
+                <div class="text-center">
+                    <span class="small text-muted">Chưa có tài khoản học sinh?</span>
+                    <a href="{{ url_for('auth.register') }}" class="small fw-bold text-primary text-decoration-none ms-1">Đăng ký ngay</a>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- NỬA BÊN PHẢI BANNER -->
+        <div class="col-lg-6 auth-art-side d-none d-lg-flex position-relative">
+            <div class="position-relative" style="z-index: 2;">
+                <span class="badge bg-white text-primary px-3 py-2 rounded-pill small fw-bold mb-3 shadow-sm">
+                    🎓 Nền tảng Ôn thi Thông minh
+                </span>
+                <h1 class="display-5 fw-bold mb-3" style="line-height: 1.2;">Welcome.</h1>
+                <p class="fs-6 opacity-90 mb-4" style="max-width: 360px;">
+                    "Đừng lo lắng về những khó khăn của bạn trong toán học. Tôi có thể đảm bảo với bạn rằng những khó khăn của tôi còn lớn hơn nhiều."
+                </p>
+                <div class="d-flex align-items-center gap-2 small opacity-75">
+                    <i class="fa-solid fa-quote-left"></i>
+                    <span>Albert Einstein</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 🟢 POPUP MODAL THÔNG BÁO AN ỦI & DẪN HỌC SINH TẠO TÀI KHOẢN MỚI -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fw-bold fs-6 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-heart-pulse text-warning"></i>
+                    <span>Đừng lo lắng bạn nhé!</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 text-center bg-white">
+                <div class="mb-3">
+                    <span class="display-4">🌱</span>
+                </div>
+                
+                <h6 class="fw-bold text-dark mb-2">Lỡ quên mật khẩu mất rồi sao?</h6>
+                
+                <p class="text-secondary small mb-3" style="line-height: 1.6;">
+                    Để bảo vệ thông tin cá nhân và dữ liệu học tập của bạn, hệ thống tạm thời không hỗ trợ đặt lại mật khẩu trực tiếp.
+                </p>
+
+                <div class="alert border-0 rounded-3 text-start small mb-0" style="background-color: #f0fdf4; color: #166534;">
+                    <i class="fa-solid fa-lightbulb text-warning me-1"></i>
+                    <strong>Gợi ý nhỏ:</strong> Đừng ngần ngại tạo ngay một tài khoản mới! Việc này chỉ mất vài giây và bạn sẽ có ngay một chặng hành trình ôn thi Toán 12 hoàn toàn mới mẻ, tràn đầy năng lượng! 💪
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light border-0 px-4 py-3 justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 fw-bold small" data-bs-dismiss="modal">
+                    Thử nhớ lại xem
+                </button>
+
+                <a href="{{ url_for('auth.register') }}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold small shadow-sm text-decoration-none">
+                    Tạo tài khoản mới ngay <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// 🟢 TỰ ĐỘNG CHUYỂN MODAL RA THẺ BODY ĐỂ NỔI LÊN TRÊN KHÔNG BỊ LỖI NỀN XÁM
+document.addEventListener("DOMContentLoaded", function() {
+    const forgotModal = document.getElementById('forgotPasswordModal');
+    if (forgotModal) {
+        document.body.appendChild(forgotModal);
+    }
+});
+</script>
+{% endblock %}

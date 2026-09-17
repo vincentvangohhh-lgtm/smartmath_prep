@@ -1,0 +1,748 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- PHÂN LOẠI CHÍNH XÁC CHẾ ĐỘ AI LÀ TRIỆU PHÚ (LOẠI TRỪ LỘ TRÌNH ÔN TẬP) -->
+{% set title_upper = exam.title.upper() %}
+{% set is_millionaire = ('TRIỆU PHÚ' in title_upper or 'TRIEU PHU' in title_upper) and ('NGÀY' not in title_upper and 'NGAY' not in title_upper and 'DAY' not in title_upper and 'LỘ TRÌNH' not in title_upper and 'LO TRINH' not in title_upper) %}
+{% set is_official = ('CHÍNH THỨC' in title_upper or 'CHINH THUC' in title_upper or 'BỘ GD' in title_upper or '0101' in title_upper) %}
+
+{% if is_millionaire %}
+<style>
+    /* 1. HIỂN THỊ HÌNH NỀN TRONG TRẺO, SẮC NÉT NGUYÊN BẢN (KHÔNG LỚP PHỦ MỜ) */
+    html, body {
+        background-image: url("{{ url_for('static', filename='images/image_d6ee33.webp') }}") !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-size: cover !important;
+        background-attachment: fixed !important;
+        background-color: #000000 !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
+    /* 2. TRIỆT TƯỚC HOÀN TOÀN CÁC LỚP PHỦ MÀU TRẮNG MỜ (LỚP PHỦ PSEUDO-ELEMENTS ::before / ::after) */
+    html::before, html::after,
+    body::before, body::after,
+    main::before, main::after,
+    .main-content::before, .main-content::after,
+    .container::before, .container::after {
+        display: none !important;
+        content: none !important;
+        background: transparent !important;
+        opacity: 0 !important;
+    }
+
+    /* 3. ÉP TOÀN BỘ KHUNG BỌC TRONG SUỐT TUYỆT ĐỐI */
+    main, 
+    .main-content, 
+    .content-wrapper, 
+    .container, 
+    .container-fluid, 
+    .row, 
+    .col-lg-9, 
+    .col-lg-3,
+    div[class*="container"] {
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        backdrop-filter: none !important;
+    }
+
+    /* 4. KHUNG CÂU HỎI VIỀN KIM LOẠI XÁM & NỀN XANH THẮM TRƯỜNG QUAY */
+    .millionaire-q-card {
+        background: linear-gradient(180deg, #0f2b48 0%, #081a2d 100%) !important;
+        border: 3px solid #9aa8b6 !important;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.15) !important;
+        border-radius: 18px !important;
+        color: #ffffff !important;
+    }
+
+    /* 5. KHUNG PHƯƠNG ÁN LỰA CHỌN VIỀN KIM LOẠI */
+    .millionaire-option {
+        background: linear-gradient(180deg, #133357 0%, #0a1f36 100%) !important;
+        border: 2px solid #58738e !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .millionaire-option:hover {
+        background: linear-gradient(180deg, #1c4573 0%, #102d4d 100%) !important;
+        border-color: #f59e0b !important;
+        transform: translateY(-1px);
+        cursor: pointer;
+    }
+
+    /* CHỐT ĐÁP ÁN (MÀU CAM RỰC RỠ) */
+    .millionaire-option:has(input[type="radio"]:checked) {
+        background: linear-gradient(180deg, #d97706 0%, #92400e 100%) !important;
+        border-color: #fef08a !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.8) !important;
+    }
+
+    /* CHỮ VÀ BẢNG TRONG CHẾ ĐỘ TRIỆU PHÚ */
+    .millionaire-q-card p, .millionaire-q-card span, .millionaire-q-card td {
+        color: #ffffff !important;
+    }
+    .millionaire-q-card .table {
+        color: #ffffff !important;
+    }
+    .millionaire-q-card .table-light, .millionaire-q-card td {
+        background-color: rgba(15, 43, 72, 0.8) !important;
+        border-color: #475569 !important;
+    }
+
+    /* ================================================================= */
+    /* TỐI ƯU MÀU SẮC DỄ NHÌN CHO CÔNG THỨC TOÁN HỌC (MATHJAX / KATEX) */
+    /* ================================================================= */
+    .millionaire-option, 
+    .millionaire-option span, 
+    .millionaire-option p,
+    .millionaire-option div,
+    .millionaire-option .option-text,
+    .millionaire-option .MathJax,
+    .millionaire-option .MathJax *,
+    .millionaire-option mjx-container,
+    .millionaire-option mjx-container *,
+    .millionaire-option .katex,
+    .millionaire-option .katex * {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+    }
+
+    /* ĐỔI MÀU KÝ TỰ NHÃN ĐÁP ÁN A., B., C., D. SANG MÀU VÀNG CAM SANG TRỌNG */
+    .millionaire-option .option-text > strong:first-child {
+        color: #f59e0b !important;
+        font-size: 1.15rem !important;
+        margin-right: 6px !important;
+    }
+
+    /* ĐỔI MÀU VÀNG CHANH KHI ĐÁP ÁN ĐƯỢC CHỌN */
+    .millionaire-option:has(input[type="radio"]:checked) .option-text > strong:first-child {
+        color: #fef08a !important;
+    }
+    .modal-backdrop {
+        display: none !important;
+    }
+    .modal {
+        background-color: rgba(0, 0, 0, 0.4) !important; /* Làm mờ nhẹ phần nền phía sau thay vì tối đen */
+    }
+</style>
+{% endif %}
+
+<style>
+    /* CSS TỰ ĐỘNG CĂN CHỈNH HÌNH ẢNH / ĐỒ THỊ CHẤT LƯỢNG CAO */
+    .q-image-container {
+        text-align: center;
+        margin: 15px 0;
+    }
+    .q-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,0,0,0.1);
+        background-color: #ffffff;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- CỘT BÊN TRÁI: DANH SÁCH CÂU HỎI -->
+        <div class="col-lg-9">
+            <div class="card p-4 border-0 shadow-sm rounded-4 mb-4 {% if is_millionaire %}millionaire-q-card{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="fw-bold text-primary mb-0 {% if is_millionaire %}text-warning{% endif %}">{{ exam.title }}</h4>
+                    <div class="badge bg-danger p-2 fs-6 shadow-sm">
+                        <i class="fa-solid fa-clock me-2"></i><span id="timer-display">90:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="exam-form" method="POST" action="{{ url_for('exam.take_exam', exam_id=exam.id) }}">
+                <input type="hidden" name="spent_time" id="spent-time-input" value="0">
+                
+                {% for question in questions %}
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 question-card {% if is_millionaire %}millionaire-q-card{% endif %}" id="q-card-{{ loop.index }}">
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-3 border-secondary">
+                        <span class="fw-bold {% if is_millionaire %}text-warning{% else %}text-secondary{% endif %}">
+                            Câu hỏi {{ loop.index }} / {{ questions|length }}
+                        </span>
+                        <span class="badge bg-primary text-white">{{ question.bloom_level or 'Thông hiểu' }}</span>
+                    </div>
+                    
+                    <p class="fs-5 fw-semibold {% if is_millionaire %}text-white{% else %}text-dark{% endif %}">
+                        {{ question.content | safe }}
+                    </p>
+
+                    <!-- HIỂN THỊ HÌNH ẢNH / ĐỒ THỊ / BẢNG CHẤT LƯỢNG CAO NẾU CÓ -->
+                    {% if question.image_url %}
+                    <div class="q-image-container">
+                        <img src="{{ url_for('static', filename=question.image_url) }}" alt="Hình minh họa câu {{ loop.index }}" class="q-image">
+                    </div>
+                    {% endif %}
+
+                    <div class="options-container mt-3">
+                        {% if question.question_type == 'PART_I' %}
+                        <!-- PHẦN I: TRẮC NGHIỆM ĐƠN PHƯƠNG ÁN -->
+                        <div class="d-grid gap-2">
+                            <label class="option-box p-3 border rounded-3 d-flex align-items-center cursor-pointer {% if is_millionaire %}millionaire-option{% else %}bg-white-adaptive{% endif %}">
+                                <input type="radio" name="question_{{ question.id }}" value="A" class="form-check-input me-3 opt-input" data-qindex="{{ loop.index }}" data-correct="{{ question.correct_option }}">
+                                <span class="option-text"><strong>A.</strong> {{ question.option_a | safe }}</span>
+                            </label>
+                            
+                            <label class="option-box p-3 border rounded-3 d-flex align-items-center cursor-pointer {% if is_millionaire %}millionaire-option{% else %}bg-white-adaptive{% endif %}">
+                                <input type="radio" name="question_{{ question.id }}" value="B" class="form-check-input me-3 opt-input" data-qindex="{{ loop.index }}" data-correct="{{ question.correct_option }}">
+                                <span class="option-text"><strong>B.</strong> {{ question.option_b | safe }}</span>
+                            </label>
+                            
+                            <label class="option-box p-3 border rounded-3 d-flex align-items-center cursor-pointer {% if is_millionaire %}millionaire-option{% else %}bg-white-adaptive{% endif %}">
+                                <input type="radio" name="question_{{ question.id }}" value="C" class="form-check-input me-3 opt-input" data-qindex="{{ loop.index }}" data-correct="{{ question.correct_option }}">
+                                <span class="option-text"><strong>C.</strong> {{ question.option_c | safe }}</span>
+                            </label>
+                            
+                            <label class="option-box p-3 border rounded-3 d-flex align-items-center cursor-pointer {% if is_millionaire %}millionaire-option{% else %}bg-white-adaptive{% endif %}">
+                                <input type="radio" name="question_{{ question.id }}" value="D" class="form-check-input me-3 opt-input" data-qindex="{{ loop.index }}" data-correct="{{ question.correct_option }}">
+                                <span class="option-text"><strong>D.</strong> {{ question.option_d | safe }}</span>
+                            </label>
+                        </div>
+
+                        {% elif question.question_type == 'PART_II' %}
+                        <!-- PHẦN II: ĐÚNG / SAI 4 MỆNH ĐỀ -->
+                        <div class="table-responsive border rounded-3 p-2 bg-light">
+                            <table class="table table-bordered align-middle mb-0 bg-white">
+                                <thead class="table-dark text-center">
+                                    <tr>
+                                        <th class="text-start">Các mệnh đề phát biểu kiến thức</th>
+                                        <th style="width: 90px;">Đúng</th>
+                                        <th style="width: 90px;">Sai</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="small">a) {{ question.sub_q_a | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_a" value="Đúng" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_a" value="Sai" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">b) {{ question.sub_q_b | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_b" value="Đúng" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_b" value="Sai" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">c) {{ question.sub_q_c | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_c" value="Đúng" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_c" value="Sai" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">d) {{ question.sub_q_d | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_d" value="Đúng" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ question.id }}_d" value="Sai" class="form-check-input opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% elif question.question_type == 'PART_III' %}
+                        <!-- PHẦN III: ĐIỀN ĐÁP SỐ TỰ LUẬN -->
+                        <div class="input-group" style="max-width: 360px;">
+                            <span class="input-group-text bg-dark text-white fw-bold">Đáp số điền tự luận:</span>
+                            <input type="text" name="question_{{ question.id }}" class="form-control text-center fw-bold text-danger fs-5 opt-input" data-qindex="{{ loop.index }}" placeholder="Nhập kết quả số...">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </form>
+        </div>
+
+        <!-- CỘT BÊN PHẢI: QUYỀN TRỢ GIÚP & PHIẾU ĐIỀN -->
+        <div class="col-lg-3">
+            <div class="position-sticky" style="top: 20px;">
+                
+                <!-- KHỐI QUYỀN TRỢ GIÚP & ÂM THANH TRIỆU PHÚ (CHỈ HIỂN THỊ KHI LÀ MODE TRIỆU PHÚ THỰC SỰ) -->
+                {% if is_millionaire %}
+                <div class="card p-3 border-0 shadow-sm rounded-4 mb-3 bg-dark text-white text-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-warning mb-0"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>TRỢ GIÚP</h6>
+                        <button type="button" id="btn-toggle-bgm" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-2 py-1" style="font-size: 12px;" onclick="toggleBGM()">
+                            <i class="fa-solid fa-music me-1"></i><span id="bgm-status">Bật Nhạc</span>
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-around">
+                        <button type="button" id="btn-lifeline-5050" class="btn btn-outline-warning btn-sm rounded-circle fw-bold p-0 d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; font-size: 13px;" title="Loại bỏ 2 phương án sai" onclick="use5050()">
+                            50:50
+                        </button>
+                        <button type="button" id="btn-lifeline-ai" class="btn btn-outline-info btn-sm rounded-circle p-0 d-flex justify-content-center align-items-center" style="width: 45px; height: 45px;" title="Hỏi AI Assistant" onclick="useAIAssistant()">
+                            <i class="fa-solid fa-robot fa-lg"></i>
+                        </button>
+                        <button type="button" id="btn-lifeline-swap" class="btn btn-outline-success btn-sm rounded-circle p-0 d-flex justify-content-center align-items-center" style="width: 45px; height: 45px;" title="Đổi câu hỏi khác" onclick="useSwapQuestion()">
+                            <i class="fa-solid fa-rotate fa-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- PHIẾU ĐIỀN KẾT QUẢ -->
+                <div class="card p-3 border-0 shadow-sm rounded-4 {% if is_millionaire %}millionaire-q-card{% endif %}">
+                    <h5 class="fw-bold text-center border-bottom pb-2 mb-3 {% if is_millionaire %}text-warning border-secondary{% else %}text-dark{% endif %}">Phiếu Điền Kết Quả</h5>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+                        {% for question in questions %}
+                        <button type="button" 
+                                id="nav-btn-{{ loop.index }}" 
+                                onclick="scrollToQuestion({{ loop.index }})" 
+                                class="btn btn-outline-secondary btn-sm rounded-circle d-flex justify-content-center align-items-center fw-bold text-dark bg-light" 
+                                style="width: 38px; height: 38px; min-width: 38px; font-size: 14px;">
+                            {{ loop.index }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" form="exam-form" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Nộp Bài Thi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HIỂN THỊ GỢI Ý TỪ AI -->
+<div class="modal fade" id="aiHintModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark border-0 shadow rounded-4">
+            <div class="modal-header bg-info text-white rounded-top-4">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-lightbulb me-2"></i>Gợi Ý Từ AI Assistant</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="aiHintContent">
+                <div class="text-center my-3">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 mb-0 text-muted">AI đang phân tích công thức toán học...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentActiveQuestionIndex = 1;
+
+document.addEventListener("DOMContentLoaded", function() {
+    // TỰ ĐỘNG TỎA SÁNG CÔNG THỨC & LÀM SẠCH KÝ TỰ THỪA TRONG ĐÁP ÁN (VD: A. A. -> A.)
+    function cleanAndEnhanceOptions() {
+        document.querySelectorAll('.option-text').forEach(el => {
+            let html = el.innerHTML;
+            // Xóa tiền tố thừa dạng "A. A.", "B. B." bị lặp lại từ DB
+            html = html.replace(/<strong>([A-D])\.<\/strong>\s*\1\.\s*/g, '<strong>$1.</strong> ');
+            el.innerHTML = html;
+        });
+    }
+    cleanAndEnhanceOptions();
+
+    // 1. BỘ ĐẾM THỜI GIAN
+    let durationMinutes = parseInt("{{ exam.duration if exam.duration else 90 }}");
+    let totalSeconds = durationMinutes * 60;
+    const timerDisplay = document.getElementById("timer-display");
+    const examForm = document.getElementById("exam-form");
+    const spentTimeInput = document.getElementById("spent-time-input");
+
+    function updateDisplay() {
+        let mins = Math.floor(totalSeconds / 60);
+        let secs = totalSeconds % 60;
+        let displayMins = mins < 10 ? "0" + mins : mins;
+        let displaySecs = secs < 10 ? "0" + secs : secs;
+        timerDisplay.textContent = displayMins + ":" + displaySecs;
+    }
+
+    const intervalId = setInterval(function() {
+        if (totalSeconds <= 0) {
+            clearInterval(intervalId);
+            timerDisplay.textContent = "00:00";
+            if (spentTimeInput) {
+                spentTimeInput.value = durationMinutes * 60;
+            }
+            alert("Đã hết thời gian làm bài! Hệ thống tự động nộp bài làm của bạn.");
+            examForm.submit();
+        } else {
+            totalSeconds--;
+            updateDisplay();
+            if (spentTimeInput) {
+                let totalDurationSeconds = durationMinutes * 60;
+                spentTimeInput.value = totalDurationSeconds - totalSeconds;
+            }
+        }
+    }, 1000);
+
+    updateDisplay();
+
+    // 2. ĐỔI MÀU NÚT PHIẾU ĐÁP ÁN & PHÁT ÂM THANH CHỐT ĐÁP ÁN
+    const inputs = document.querySelectorAll(".opt-input");
+    inputs.forEach(function(input) {
+        input.addEventListener("change", function() {
+            const qIndex = this.getAttribute("data-qindex");
+            const navBtn = document.getElementById("nav-btn-" + qIndex);
+            if (navBtn) {
+                navBtn.classList.remove("btn-outline-secondary", "bg-light", "text-dark");
+                navBtn.classList.add("btn-success", "text-white");
+            }
+            // Phát hiệu ứng âm thanh chốt đáp án nếu ở chế độ Triệu Phú
+            {% if is_millionaire %}
+            playSelectAnswerSFX();
+            {% endif %}
+        });
+
+        input.addEventListener("input", function() {
+            if(this.type === "text") {
+                const qIndex = this.getAttribute("data-qindex");
+                const navBtn = document.getElementById("nav-btn-" + qIndex);
+                if (navBtn) {
+                    if (this.value.trim() !== "") {
+                        navBtn.classList.remove("btn-outline-secondary", "bg-light", "text-dark");
+                        navBtn.classList.add("btn-success", "text-white");
+                    } else {
+                        navBtn.classList.remove("btn-success", "text-white");
+                        navBtn.classList.add("btn-outline-secondary", "bg-light", "text-dark");
+                    }
+                }
+            }
+        });
+    });
+
+    // 3. XÁC NHẬN NỘP BÀI
+    examForm.addEventListener("submit", function(e) {
+        if (totalSeconds > 0) {
+            const confirmSubmit = confirm("Bạn có chắc chắn muốn nộp bài thi này không?");
+            if (!confirmSubmit) {
+                e.preventDefault();
+            }
+        }
+    });
+
+    // 4. AUTO SCROLL DETECT
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                currentActiveQuestionIndex = parseInt(id.replace('q-card-', ''));
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.question-card').forEach(card => {
+        observer.observe(card);
+    });
+});
+
+function scrollToQuestion(index) {
+    currentActiveQuestionIndex = index;
+    const element = document.getElementById("q-card-" + index);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// ==========================================
+// HỆ THỐNG ÂM THANH WEBAUDIO TỰ SINH (CHỐNG CHẶN 100%)
+// ==========================================
+let audioCtx = null;
+let bgmInterval = null;
+let isPlayingBGM = false;
+
+function initAudioContext() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function toggleBGM() {
+    initAudioContext();
+
+    const bgmBtn = document.getElementById('btn-toggle-bgm');
+    const bgmStatus = document.getElementById('bgm-status');
+
+    if (isPlayingBGM) {
+        clearInterval(bgmInterval);
+        isPlayingBGM = false;
+        if (bgmStatus) bgmStatus.textContent = "Bật Nhạc";
+        if (bgmBtn) {
+            bgmBtn.classList.remove('btn-warning', 'text-dark');
+            bgmBtn.classList.add('btn-outline-light');
+        }
+    } else {
+        isPlayingBGM = true;
+        if (bgmStatus) bgmStatus.textContent = "Tắt Nhạc";
+        if (bgmBtn) {
+            bgmBtn.classList.remove('btn-outline-light');
+            bgmBtn.classList.add('btn-warning', 'text-dark');
+        }
+
+        const bassNotes = [65.41, 61.74, 58.27, 55.00];
+        let step = 0;
+
+        bgmInterval = setInterval(() => {
+            if (!isPlayingBGM || !audioCtx) return;
+            
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(bassNotes[Math.floor(step / 4) % bassNotes.length], audioCtx.currentTime);
+                
+                const isAccent = step % 2 === 0;
+                const volume = isAccent ? 0.20 : 0.08;
+                
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+                
+                step++;
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }, 380);
+    }
+}
+
+function playSelectAnswerSFX() {
+    initAudioContext();
+    if (!audioCtx) return;
+
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+    } catch (e) {
+        console.log("SFX Error:", e);
+    }
+}
+
+document.addEventListener('click', function unlockAudioOnFirstClick() {
+    initAudioContext();
+}, { once: true });
+
+// ==========================================
+// LOGIC 3 QUYỀN TRỢ GIÚP AI LÀ TRIỆU PHÚ
+// ==========================================
+function use5050() {
+    const btn = document.getElementById('btn-lifeline-5050');
+    if (btn.classList.contains('disabled')) return;
+
+    const qCard = document.getElementById(`q-card-${currentActiveQuestionIndex}`);
+    if (!qCard) return;
+
+    const inputs = Array.from(qCard.querySelectorAll('input[type="radio"]'));
+    if (inputs.length < 4) {
+        alert("Quyền 50:50 chỉ áp dụng cho câu hỏi trắc nghiệm 4 phương án!");
+        return;
+    }
+
+    // Lấy chính xác đáp án đúng từ input đầu tiên (hoặc bất kỳ input nào có chứa data-correct)
+    let correctVal = "";
+    for (let inp of inputs) {
+        let c = inp.getAttribute('data-correct');
+        if (c && c.trim() !== "") {
+            correctVal = c.trim().toUpperCase();
+            break;
+        }
+    }
+    
+    // Chỉ lấy ký tự chữ cái đầu tiên (A, B, C, hoặc D)
+    if (correctVal.length > 0) {
+        correctVal = correctVal.charAt(0);
+    }
+
+    if (confirm(`Bạn có chắc chắn muốn dùng quyền trợ giúp 50:50 cho Câu hỏi ${currentActiveQuestionIndex}?`)) {
+        let wrongInputs = [];
+
+        // Kiểm tra xem đã lấy được đáp án đúng chuẩn xác hay chưa
+        if (['A', 'B', 'C', 'D'].includes(correctVal)) {
+            // Lọc chính xác các input có giá trị KHÁC với đáp án đúng
+            wrongInputs = inputs.filter(input => {
+                let val = input.value.trim().toUpperCase();
+                return val !== correctVal;
+            });
+        } else {
+            // DỰ PHÒNG: Nếu không tìm thấy data-correct, mặc định lấy câu A làm đúng và ẩn các câu còn lại
+            wrongInputs = inputs.filter(input => input.value.trim().toUpperCase() !== 'A');
+        }
+
+        // Xáo trộn ngẫu nhiên danh sách các đáp án SAI
+        wrongInputs.sort(() => Math.random() - 0.5);
+
+        // Chọn đúng 2 đáp án SAI để ẩn đi
+        let toHide = wrongInputs.slice(0, 2);
+
+        toHide.forEach(input => {
+            const labelBox = input.closest('label');
+            if (labelBox) {
+                labelBox.style.opacity = '0.15';
+                labelBox.style.pointerEvents = 'none';
+                input.disabled = true;
+            }
+        });
+
+        // Khóa nút 50:50 sau khi dùng
+        btn.classList.add('disabled', 'btn-secondary');
+        btn.classList.remove('btn-outline-warning');
+        btn.style.opacity = '0.4';
+    }
+}
+
+function useAIAssistant() {
+    const btn = document.getElementById('btn-lifeline-ai');
+    if (btn.classList.contains('disabled')) return;
+
+    const qCard = document.getElementById(`q-card-${currentActiveQuestionIndex}`);
+    if (!qCard) return;
+
+    // Lấy nội dung câu hỏi hiện tại trên màn hình
+    const questionTextElem = qCard.querySelector('p.fs-5');
+    const questionContent = questionTextElem ? questionTextElem.innerText.trim() : "Câu hỏi toán học";
+
+    if (confirm(`Bạn muốn nhờ AI phân tích và gợi ý hướng giải cho Câu hỏi ${currentActiveQuestionIndex}?`)) {
+        const hintModal = new bootstrap.Modal(document.getElementById('aiHintModal'));
+        const hintContent = document.getElementById('aiHintContent');
+        
+        hintContent.innerHTML = `
+            <div class="text-center my-3">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 mb-0 text-muted">AI đang đọc đề bài và phân tích dữ liệu...</p>
+            </div>
+        `;
+        hintModal.show();
+
+        // Phân tích nội dung đề để đưa ra gợi ý sát thực tế
+        setTimeout(() => {
+            let hintMessage = "Hãy đọc kỹ các giả thiết của đề bài, đặt ẩn phụ hoặc áp dụng công thức toán học phù hợp để giải quyết.";
+            
+            if (questionContent.includes("vay") || questionContent.includes("lãi suất") || questionContent.includes("ngân hàng")) {
+                hintMessage = "Đây là bài toán <strong>Lãi suất trả góp / Tiết kiệm</strong>. Bạn hãy áp dụng công thức tính tiền gốc và lãi hàng tháng: $A_n = A_0(1+r)^n - \frac{A[(1+r)^n - 1]}{r}$ hoặc công thức dòng tiền trả đều định kỳ.";
+            } else if (questionContent.includes("hàm số") || questionContent.includes("cực trị") || questionContent.includes("đồ thị")) {
+                hintMessage = "Đối với bài toán hàm số, hãy tính đạo hàm $y'$, tìm các điểm mà $y' = 0$ hoặc không xác định để lập bảng biến thiên hoặc sử dụng công thức tính nhanh khoảng cách giữa 2 điểm cực trị.";
+            } else if (questionContent.includes("thể tích") || questionContent.includes("khối chóp") || questionContent.includes("lăng trụ")) {
+                hintMessage = "Bài toán hình học không gian: Hãy xác định rõ chiều cao của khối đa diện và diện tích mặt đáy, chú ý các góc giữa đường thẳng và mặt phẳng.";
+            }
+
+            hintContent.innerHTML = `
+                <div class="alert alert-light border-start border-info border-4 mb-0">
+                    <strong class="text-primary"><i class="fa-solid fa-compass me-1"></i> Phân tích từ AI Assistant (Câu ${currentActiveQuestionIndex}):</strong>
+                    <p class="mt-2 mb-1">${hintMessage}</p>
+                    <small class="text-muted">* Lời khuyên: Hãy thử loại trừ các đáp án quá lớn hoặc quá nhỏ bằng phương pháp ước lượng.</small>
+                </div>
+            `;
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }, 1000);
+
+        btn.classList.add('disabled', 'btn-secondary');
+        btn.classList.remove('btn-outline-info');
+        btn.style.opacity = '0.4';
+    }
+}
+
+function useSwapQuestion() {
+    const btn = document.getElementById('btn-lifeline-swap');
+    if (btn.classList.contains('disabled')) return;
+
+    const qCard = document.getElementById(`q-card-${currentActiveQuestionIndex}`);
+    if (!qCard) return;
+
+    if (confirm(`Bạn có chắc muốn đổi Câu hỏi ${currentActiveQuestionIndex} sang câu hỏi tương đương khác không?`)) {
+        const qText = qCard.querySelector('p.fs-5');
+        
+        // Danh sách câu hỏi dự phòng thay thế chất lượng cao
+        const alternativePool = [
+            {
+                content: "Tìm giá trị lớn nhất của hàm số $y = x^3 - 3x + 2$ trên đoạn $[0; 2]$.",
+                a: "$y = 4$", b: "$y = 2$", c: "$y = 0$", d: "$y = -2$"
+            },
+            {
+                content: "Cho hình chóp $S.ABCD$ có đáy là hình vuông cạnh $a$, $SA \\perp (ABCD)$ và $SA = a\\sqrt{3}$. Tính thể tích khối chóp $S.ABCD$.",
+                a: "$V = \\frac{a^3\\sqrt{3}}{3}$", b: "$V = a^3\\sqrt{3}$", c: "$V = \\frac{a^3\\sqrt{3}}{6}$", d: "$V = \\frac{a^3}{3}$"
+            },
+            {
+                content: "Tính đạo hàm của hàm số $y = \\ln(x^2 + 2x + 3)$.",
+                a: "$y' = \\frac{2x+2}{x^2+2x+3}$", b: "$y' = \\frac{1}{x^2+2x+3}$", c: "$y' = \\frac{2x+2}{\\ln(x^2+2x+3)}$", d: "$y' = \\frac{2}{x^2+2x+3}$"
+            }
+        ];
+
+        // Chọn ngẫu nhiên 1 câu hỏi thay thế
+        const randomQ = alternativePool[Math.floor(Math.random() * alternativePool.length)];
+
+        if (qText) {
+            qText.innerHTML = `<span class="badge bg-warning text-dark me-2">Câu hỏi đổi mới</span> ${randomQ.content}`;
+        }
+        
+        const optionTexts = qCard.querySelectorAll('.option-text');
+        if (optionTexts.length >= 4) {
+            optionTexts[0].innerHTML = `<strong>A.</strong> ${randomQ.a}`;
+            optionTexts[1].innerHTML = `<strong>B.</strong> ${randomQ.b}`;
+            optionTexts[2].innerHTML = `<strong>C.</strong> ${randomQ.c}`;
+            optionTexts[3].innerHTML = `<strong>D.</strong> ${randomQ.d}`;
+        }
+
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+
+        btn.classList.add('disabled', 'btn-secondary');
+        btn.classList.remove('btn-outline-success');
+        btn.style.opacity = '0.4';
+    }
+}
+
+function useSwapQuestion() {
+    const btn = document.getElementById('btn-lifeline-swap');
+    if (btn.classList.contains('disabled')) return;
+
+    const qCard = document.getElementById(`q-card-${currentActiveQuestionIndex}`);
+    if (!qCard) return;
+
+    if (confirm(`Bạn có chắc muốn đổi Câu hỏi ${currentActiveQuestionIndex} sang câu hỏi mới?`)) {
+        const qText = qCard.querySelector('p');
+        qText.innerHTML = `<span class="badge bg-warning text-dark me-2">Câu mới</span> Tìm giá trị lớn nhất của hàm số $y = -x^4 + 2x^2 + 3$ trên đoạn $[-1; 2]$.`;
+        
+        const optionTexts = qCard.querySelectorAll('.option-text');
+        if (optionTexts.length >= 4) {
+            optionTexts[0].innerHTML = `<strong>A.</strong> $y = 4$`;
+            optionTexts[1].innerHTML = `<strong>B.</strong> $y = 3$`;
+            optionTexts[2].innerHTML = `<strong>C.</strong> $y = 0$`;
+            optionTexts[3].innerHTML = `<strong>D.</strong> $y = -5$`;
+        }
+
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+
+        btn.classList.add('disabled', 'btn-secondary');
+        btn.classList.remove('btn-outline-success');
+        btn.style.opacity = '0.4';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math12A3 - Nền Tảng Luyện Thi Tốt Nghiệp THPT Môn Toán Thông Minh Cùng AI</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ĐỊNH NGHĨA HỆ THỐNG MÀU SẮC (DARK & LIGHT MODE) --- */
+        :root[data-theme="dark"] {
+            --bg-body: #0b1329;
+            --bg-card: #131c38;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --navbar-bg: rgba(11, 19, 41, 0.95);
+        }
+
+        :root[data-theme="light"] {
+            --bg-body: #f4f6f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --navbar-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Navbar */
+        .navbar-custom {
+            background-color: var(--navbar-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-link {
+            color: var(--text-muted) !important;
+            transition: color 0.2s;
+        }
+        .nav-link:hover {
+            color: #22d3ee !important;
+        }
+
+        /* Khung nền trắng tròn phóng to gấp 2 lần (66px) */
+        .brand-logo-container {
+            width: 66px;
+            height: 66px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border: 2px solid rgba(34, 211, 238, 0.4);
+        }
+        .brand-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        } 
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            padding: 90px 0;
+            background: radial-gradient(circle at top right, rgba(34,211,238,0.05) 0%, transparent 60%);
+        }
+
+        .hero-badge {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #22d3ee 0%, #0284c7 50%, #1d4ed8 100%);
+            border: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 211, 238, 0.6);
+            color: #fff;
+        }
+
+        /* Card tính năng */
+        .feature-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .text-custom-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Dark / Light Mode Toggle Button */
+        .theme-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+        }
+
+        footer {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+        }
+    /* ============================================================================== */
+    /* 📱 TỐI ƯU GIAO DIỆN HERO SECTION TRÊN ĐIỆN THOẠI                            */
+    /* ============================================================================== */
+        @media (max-width: 991.98px) {
+            .hero-badge {
+                white-space: normal !important; /* Cho phép badge tự động xuống dòng trên mobile */
+                text-align: center;
+                display: inline-block;
+                line-height: 1.5;
+                padding: 8px 16px !important;
+                font-size: 13px !important;
+                max-width: 100% !important;
+            }
+
+            .hero-section h1.display-4 {
+                font-size: 2.2rem !important; /* Thu nhỏ cỡ chữ tiêu đề chính để cân đối màn hình điện thoại */
+                line-height: 1.3 !important;
+            }
+
+            .hero-section .container {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 🧩 NAVBAR ================= -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center gap-2 text-decoration-none" href="#">
+                <div class="brand-logo-container">
+                    <img src="{{ url_for('static', filename='images/logo_12a3_4.png') }}" alt="Math12A3 Logo" class="brand-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3771/3771518.png'">
+                </div>
+                <span style="color: var(--text-main);">Math12A3</span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav mx-auto gap-3 fw-semibold">
+                    <li class="nav-item"><a class="nav-link" href="#about">Mục Đích</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Tính Năng AI</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#roadmap">Lộ Trình</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#community">Cộng Đồng</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                    <!-- Nút đổi Dark/Light Mode -->
+                    <button class="theme-toggle-btn" id="themeToggle" title="Chuyển đổi Sáng/Tối">
+                        <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary px-4 rounded-pill fw-semibold">Đăng Nhập</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-gradient px-4 rounded-pill fw-semibold">Đăng Ký Miễn Phí</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= 🚀 HERO SECTION ================= -->
+    <header class="hero-section">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 text-center text-lg-start">
+                    <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-3 d-inline-block">
+                        🎯 Nền Tảng Chuyên Sâu Luyện Thi Tốt Nghiệp THPT Môn Toán
+                    </span>
+                    <h1 class="display-4 fw-black mb-4 lh-tight" style="color: var(--text-main);">
+                        Chinh Phục Điểm <span style="background: linear-gradient(135deg, #22d3ee, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">9+ Toán THPT</span> Cùng Trợ Lý AI.
+                    </h1>
+                    <p class="fs-5 mb-4 text-custom-muted">
+                        Hệ thống học tập thông minh dành riêng cho học sinh lớp 12. Cá nhân hóa lộ trình ôn thi tốt nghiệp, dự đoán chính xác điểm số và luyện đề thích ứng chuẩn cấu trúc Bộ GD&ĐT.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-gradient btn-lg px-4 py-3 rounded-pill fw-bold">
+                            🚀 Bắt Đầu Ôn Thi Ngay
+                        </a>
+                        <a href="#features" class="btn btn-lg px-4 py-3 rounded-pill fw-bold" style="background-color: rgba(100, 116, 139, 0.15); color: var(--text-main); border: 1px solid var(--border-color); transition: all 0.2s;">
+                            📖 Khám Phá Tính Năng
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 text-center">
+                    <div class="feature-card p-3 shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2" style="border-color: var(--border-color) !important;">
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-danger rounded-circle p-2"></span>
+                                <span class="badge bg-warning rounded-circle p-2"></span>
+                                <span class="badge bg-success rounded-circle p-2"></span>
+                            </div>
+                            <small class="text-custom-muted">math12a3-ai.app/dashboard</small>
+                        </div>
+                        <div class="rounded-3 p-4 text-start" style="background: rgba(2, 132, 199, 0.05);">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0" style="color: var(--text-main);"><i class="fa-solid fa-chart-line text-info me-2"></i>Phân Tích Năng Lực AI</h5>
+                                <span class="badge bg-success px-3 py-1">Mục tiêu: 9.2 Điểm</span>
+                            </div>
+                            <p class="text-custom-muted small mb-3">Định vị năng lực liên tục - Ôn đúng trọng tâm thi tốt nghiệp</p>
+                            <div class="row g-2 text-center">
+                                <div class="col-4 rounded-3 p-2 border" style="border-color: var(--border-color) !important;">
+                                    <small class="text-custom-muted d-block">Hàm Số</small>
+                                    <strong class="text-info">96%</strong>
+                                </div>
+                                <div class="col-4 rounded-3 p-2 border" style="border-color: var(--border-color) !important;">
+                                    <small class="text-custom-muted d-block">Mũ & Log</small>
+                                    <strong class="text-info">92%</strong>
+                                </div>
+                                <div class="col-4 rounded-3 p-2 border" style="border-color: var(--border-color) !important;">
+                                    <small class="text-custom-muted d-block">Oxyz</small>
+                                    <strong class="text-info">88%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= 💡 MỤC ĐÍCH HỌC TẬP ================= -->
+    <section id="about" class="py-5" style="border-top: 1px solid var(--border-color);">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <h6 class="text-uppercase fw-bold text-info tracking-wider">Sứ Mệnh Giáo Dục</h6>
+                    <h2 class="fw-bold mb-4" style="color: var(--text-main);">Đồng Hành Cùng Sĩ Tử Lớp 12 Vượt Vũ Môn</h2>
+                    <p class="text-custom-muted mb-3">
+                        Kỳ thi tốt nghiệp THPT Quốc gia môn Toán là bước ngoặt quyết định để bước vào các trường đại học hàng đầu. Math12A3 ra đời với mục tiêu cung cấp một không gian tự học số hóa toàn diện.
+                    </p>
+                    <p class="text-custom-muted mb-4">
+                        Chúng tôi giúp học sinh giải quyết triệt để vấn đề <i>"học lan man"</i>, tự động hóa việc phát hiện lỗ hổng kiến thức bằng Trí tuệ nhân tạo (AI) và tối ưu hóa thời gian ôn tập cấp tốc trước kỳ thi.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2" style="color: var(--text-main);">
+                                <i class="fa-solid fa-check-circle text-info"></i> Bám sát cấu trúc Bộ GD&ĐT
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2" style="color: var(--text-main);">
+                                <i class="fa-solid fa-check-circle text-info"></i> Giải chi tiết từng câu hỏi
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2" style="color: var(--text-main);">
+                                <i class="fa-solid fa-check-circle text-info"></i> Hoàn toàn miễn phí
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2" style="color: var(--text-main);">
+                                <i class="fa-solid fa-check-circle text-info"></i> Tương thích mọi trình duyệt
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="feature-card p-4 text-center h-100">
+                                <i class="fa-solid fa-graduation-cap fa-2x text-info mb-3"></i>
+                                <h4 class="fw-bold" style="color: var(--text-main);">100%</h4>
+                                <p class="text-custom-muted small mb-0">Chương trình Toán 12 chuẩn quốc gia</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-card p-4 text-center h-100">
+                                <i class="fa-solid fa-bolt fa-2x text-warning mb-3"></i>
+                                <h4 class="fw-bold" style="color: var(--text-main);">Thích Ứng</h4>
+                                <p class="text-custom-muted small mb-0">Đề thi thay đổi theo năng lực thực tế</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ⚡ TÍNH NĂNG ĐỘT PHÁ ================= -->
+    <section id="features" class="py-5" style="background-color: rgba(2, 132, 199, 0.02);">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase fw-bold text-info">Hệ Sinh Thái Học Tập</h6>
+                <h2 class="fw-bold display-6" style="color: var(--text-main);">Các Tính Năng Đột Phá Trên Math12A3</h2>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card p-4 h-100">
+                        <div class="bg-info bg-opacity-10 text-info rounded-3 p-3 d-inline-flex mb-3" style="width: 55px; height: 55px; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-brain fa-xl"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-main);">AI Dự Đoán & Định Vị</h4>
+                        <p class="text-custom-muted small mb-0">
+                            Phân tích ma trận năng lực qua các bài kiểm tra khảo sát, dự đoán chính xác điểm số tốt nghiệp THPT và đưa ra biểu đồ radar chi tiết từng chuyên đề.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card p-4 h-100">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 d-inline-flex mb-3" style="width: 55px; height: 55px; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-file-lines fa-xl"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-main);">Đa Dạng Chế Độ Luyện Đề</h4>
+                        <p class="text-custom-muted small mb-0">
+                            Thỏa sức luyện tập với kho đề thi chính thức từ Bộ GD&ĐT, đề thi thử các trường chuyên toàn quốc, đề rút gọn 18 câu thích ứng hoặc leo tháp thử thách "Ai Là Triệu Phú Toán Học".
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card p-4 h-100">
+                        <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 d-inline-flex mb-3" style="width: 55px; height: 55px; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-book-bookmark fa-xl"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-main);">Thư Viện Tài Liệu Toán</h4>
+                        <p class="text-custom-muted small mb-0">
+                            Kho lưu trữ PDF khổng lồ gồm các chuyên đề nâng cao, công thức giải nhanh, tổng hợp mẹo casio và đề thi thử cập nhật liên tục mỗi ngày.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card p-4 h-100">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 d-inline-flex mb-3" style="width: 55px; height: 55px; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-comments fa-xl"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-main);">Diễn Đàn Thảo Luận Sôi Nổi</h4>
+                        <p class="text-custom-muted small mb-0">
+                            Nơi học sinh cả nước đăng câu hỏi khó, chia sẻ phương pháp giải toán hay và nhận sự hỗ trợ giải đáp trực tiếp từ cộng đồng và giáo viên.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card p-4 h-100">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-3 p-3 d-inline-flex mb-3" style="width: 55px; height: 55px; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-fire-flame-curved fa-xl"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-main);">Streak & Checklist Tuần</h4>
+                        <p class="text-custom-muted small mb-0">
+                            Duy trì thói quen ôn tập đều đặn qua chuỗi ngọn lửa Streak hằng ngày kết hợp hệ thống nhiệm vụ checklist 40 tuần bám sát chương trình.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card p-4 h-100">
+                        <div class="bg-info bg-opacity-10 text-info rounded-3 p-3 d-inline-flex mb-3" style="width: 55px; height: 55px; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-mobile-screen-button fa-xl"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-main);">Tương Thích Mọi Trình Duyệt</h4>
+                        <p class="text-custom-muted small mb-0">
+                            Giao diện Responsive hoàn toàn tối ưu hóa cho máy tính, laptop, mọi trình duyệt giúp học tập mọi lúc mọi nơi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 📈 LỘ TRÌNH ÔN THI ================= -->
+    <section id="roadmap" class="py-5">
+        <div class="container py-4 text-center">
+            <h6 class="text-uppercase fw-bold text-info">Lộ Trình Vàng</h6>
+            <h2 class="fw-bold mb-3" style="color: var(--text-main);">Chinh Phục Điểm 9+ Qua 40 Tuần Ôn Luyện</h2>
+            <p class="text-custom-muted mx-auto mb-5" style="max-width: 700px;">
+                Được nghiên cứu thiết kế bài bản chia thành 3 giai đoạn trọng điểm giúp sĩ tử vững vàng kiến thức và bứt phá ngoạn mục trong phòng thi.
+            </p>
+            
+            <div class="row g-4 text-start">
+                <div class="col-md-4">
+                    <div class="feature-card p-4 h-100 border-top border-info border-4">
+                        <span class="badge bg-info text-dark mb-3 px-3 py-2 rounded-pill fw-bold">Giai Đoạn 1</span>
+                        <h5 class="fw-bold mb-2" style="color: var(--text-main);">Học Kỳ I: Nền Tảng Vững Chắc</h5>
+                        <p class="text-custom-muted small mb-3">Tuần 1 - Tuần 15: Hoàn thiện toàn bộ chuyên đề Hàm số, khảo sát đồ thị, Mũ - Logarit và Hình học không gian.</p>
+                        <span class="text-info fw-bold small"><i class="fa-solid fa-check me-1"></i> Xây chắc gốc điểm 7-8</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card p-4 h-100 border-top border-warning border-4">
+                        <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold">Giai Đoạn 2</span>
+                        <h5 class="fw-bold mb-2" style="color: var(--text-main);">Học Kỳ II: Oxyz & Vận Dụng Cao</h5>
+                        <p class="text-custom-muted small mb-3">Tuần 16 - Tuần 30: Làm chủ tọa độ không gian Oxyz, Tích phân nâng cao, xác suất và các dạng toán phân hóa điểm 9.</p>
+                        <span class="text-warning fw-bold small"><i class="fa-solid fa-check me-1"></i> Chinh phục mức độ VDC</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card p-4 h-100 border-top border-danger border-4">
+                        <span class="badge bg-danger text-white mb-3 px-3 py-2 rounded-pill fw-bold">Giai Đoạn 3</span>
+                        <h5 class="fw-bold mb-2" style="color: var(--text-main);">Nước Rút: Luyện Đề Tốc Độ</h5>
+                        <p class="text-custom-muted small mb-3">Tuần 31 - Tuần 40: Tổng lực giải đề thi thử chuẩn cấu trúc Bộ GD&ĐT, rèn kỹ năng phản xạ nhanh và chống bẫy phòng thi.</p>
+                        <span class="text-danger fw-bold small"><i class="fa-solid fa-check me-1"></i> Sẵn sàng bứt phá điểm 9+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ⚓ FOOTER ================= -->
+    <footer id="community" class="pt-5 pb-4">
+        <div class="container py-4">
+            <div class="row g-4 justify-content-between">
+                <div class="col-lg-4">
+                    <a class="navbar-brand fw-bold fs-3 d-flex align-items-center gap-2 mb-3 text-decoration-none" href="#">
+                        <div class="brand-logo-container">
+                            <img src="{{ url_for('static', filename='images/logo_12a3_4.png') }}" alt="Logo" class="brand-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3771/3771518.png'">
+                        </div>
+                        <span style="color: var(--text-main);">Math12A3</span>
+                    </a>
+                    <p class="text-custom-muted small mb-3">
+                        "Học tập hôm nay, thành công ngày mai." Nền tảng công nghệ giáo dục tiên phong đồng hành cùng học sinh lớp 12 chinh phục kỳ thi Tốt nghiệp THPT Quốc gia môn Toán.
+                    </p>
+                    <div class="d-flex gap-3 fs-5">
+                        <a href="#" class="text-custom-muted hover-white"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="text-custom-muted hover-white"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="text-custom-muted hover-white"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="#" class="text-custom-muted hover-white"><i class="fa-brands fa-github"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--text-main);">Khám Phá</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small">
+                        <li><a href="#about" class="text-custom-muted text-decoration-none">Giới Thiệu</a></li>
+                        <li><a href="#features" class="text-custom-muted text-decoration-none">Tính Năng AI</a></li>
+                        <li><a href="#roadmap" class="text-custom-muted text-decoration-none">Lộ Trình 40 Tuần</a></li>
+                        <li><a href="{{ url_for('auth.login') }}" class="text-custom-muted text-decoration-none">Đăng Nhập Ngay</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--text-main);">Hỗ Trợ</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small">
+                        <li><a href="#" class="text-custom-muted text-decoration-none">Hướng Dẫn Ôn Thi</a></li>
+                        <li><a href="#" class="text-custom-muted text-decoration-none">Chính Sách Bảo Mật</a></li>
+                        <li><a href="#" class="text-custom-muted text-decoration-none">Câu Hỏi Thường Gặp</a></li>
+                        <li><a href="#" class="text-custom-muted text-decoration-none">Liên Hệ Hỗ Trợ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--text-main);">Nhận Tài Liệu Mỗi Ngày</h6>
+                    <p class="text-custom-muted small mb-2">Đăng ký nhận thông báo đề thi thử và công thức độc quyền.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Nhập email của bạn..." style="background: var(--bg-body); color: var(--text-main); border-color: var(--border-color);">
+                        <button class="btn btn-gradient" type="button">Gửi</button>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-secondary opacity-25 my-4">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-custom-muted small mb-0">© 2026 Math12A3 AI Platform. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="text-custom-muted small mb-0">Nền tảng ôn thi tốt nghiệp THPT Quốc gia môn Toán chất lượng cao.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= 📜 POPUP NỘI QUY CỘNG ĐỒNG ================= -->
+    <div class="modal fade" id="communityRulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content feature-card border-0 shadow-lg p-3">
+                
+                <!-- Header Popup -->
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fa-solid fa-shield-halved fa-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1" style="color: var(--text-main);" id="rulesModalLabel">Nội Quy & Lưu Ý Cộng Đồng</h4>
+                            <p class="text-custom-muted small mb-0">Cẩm nang đồng hành cùng sĩ tử 12A3</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+
+                <!-- Body Nội dung -->
+                <div class="modal-body py-4">
+                    <p class="text-custom-muted mb-4">
+                        Chào mừng bạn đến với <b>Math12A3</b>! Để xây dựng một môi trường học tập văn minh, hỗ trợ nhau bứt phá điểm số trong kỳ thi THPT Quốc gia, bạn vui lòng tuân thủ các nguyên tắc sau:
+                    </p>
+
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(2, 132, 199, 0.05); border: 1px solid var(--border-color);">
+                            <i class="fa-solid fa-bullseye text-info fs-4 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-main);">1. Tập trung mục tiêu học tập</h6>
+                                <p class="text-custom-muted small mb-0">Sử dụng hệ thống để ôn luyện Toán 12, thảo luận bài tập và tra cứu tài liệu phục vụ kỳ thi tốt nghiệp.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(2, 132, 199, 0.05); border: 1px solid var(--border-color);">
+                            <i class="fa-solid fa-comments text-warning fs-4 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-main);">2. Giao tiếp văn minh trên Diễn đàn</h6>
+                                <p class="text-custom-muted small mb-0">Khi hỏi đáp hoặc bình luận, hãy dùng ngôn từ lịch sự, tôn trọng bạn bè, đoàn kết cùng tiến bộ.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(2, 132, 199, 0.05); border: 1px solid var(--border-color);">
+                            <i class="fa-solid fa-book-open text-success fs-4 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-main);">3. Sử dụng tài liệu đúng cách</h6>
+                                <p class="text-custom-muted small mb-0">Tài liệu PDF trong thư viện dùng cho mục đích học tập cá nhân, không phát tán với mục đích thương mại.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tùy chọn không hiện lại -->
+                    <div class="form-check mt-4">
+                        <input class="form-check-input" type="checkbox" id="dontShowAgain">
+                        <label class="form-check-label text-custom-muted small" for="dontShowAgain">
+                            Đã hiểu nội quy.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Footer Nút bấm -->
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-gradient w-100 py-3 rounded-pill fw-bold" id="acceptRulesBtn" data-bs-dismiss="modal">
+                        🚀 Tôi Đã Hiểu Và Cam Kết Tuân Thủ
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS & Script xử lý Theme + Popup -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Xử lý Dark / Light Mode
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        const savedTheme = localStorage.getItem('math12a3_theme') || 'dark';
+        htmlElement.setAttribute('data-theme', savedTheme);
+        updateIcon(savedTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            let currentTheme = htmlElement.getAttribute('data-theme');
+            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('math12a3_theme', newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fa-solid fa-moon';
+            } else {
+                themeIcon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        // Xử lý Tự động bật Popup ngay mỗi khi vào web
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                const rulesModal = new bootstrap.Modal(document.getElementById('communityRulesModal'));
+                rulesModal.show();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

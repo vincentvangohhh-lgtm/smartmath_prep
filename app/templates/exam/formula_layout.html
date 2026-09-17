@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Tra Cứu Công Thức Toán - Math 12A3{% endblock %}
+
+{% block content %}
+<style>
+    .sticky-sidebar {
+        top: 90px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .formula-card {
+        border-radius: 16px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .formula-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 74, 173, 0.08) !important;
+    }
+
+    /* 🟢 KHUNG CHỨA CÔNG THỨC & XỬ LÝ TRÀN VIỀN */
+    .latex-box {
+        background: #f8fafc;
+        border-radius: 12px;
+        border-left: 4px solid #004aad !important;
+        padding: 12px 16px;
+        max-width: 100%;
+        overflow-x: auto; /* Tự động xuất hiện thanh cuộn ngang nếu quá dài */
+        overflow-y: hidden;
+    }
+
+    /* 🟢 THU NHỎ CỠ CHỮ CÔNG THỨC MATHJAX VỪA VẶN KHUNG */
+    .formula-math-display {
+        font-size: 1.05rem !important; /* Giảm cỡ chữ vừa mắt, chống vỡ khung */
+        line-height: 1.6;
+    }
+
+    /* Ép MathJax không vượt quá chiều rộng thẻ mẹ */
+    .mjx-container {
+        font-size: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        padding: 4px 0;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #e0f2fe !important;
+        color: #0369a1 !important;
+    }
+</style>
+
+<div class="container-fluid my-4" style="min-height: 80vh; max-width: 1280px;">
+    <div class="row px-md-3 g-4">
+        
+        <!-- MENU DI CHUYỂN NHANH (BÊN TRÁI) -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm sticky-top sticky-sidebar overflow-hidden">
+                <div class="card-header navbar-custom-gradient text-white fw-bold py-3 fs-6 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Chuyên Đề {{ "Đại Số & Giải Tích" if type == "algebra" else "Hình Học Oxyz" }}</span>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for cd_id, cd_info in segments.items() %}
+                        <a href="#{{ cd_id }}" class="list-group-item list-group-item-action py-3 small fw-semibold text-secondary d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-angle-right text-primary"></i>
+                            <span>{{ cd_info.title }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- KHU VỰC NỘI DUNG CÔNG THỨC CHÍNH (BÊN PHẢI) -->
+        <div class="col-lg-9">
+            
+            <!-- Thanh Công Cụ Tìm Kiếm Thời Gian Thực -->
+            <div class="mb-4">
+                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden bg-white border">
+                    <span class="input-group-text bg-white border-0 ps-3">
+                        <i class="fa-solid fa-magnifying-glass text-primary"></i>
+                    </span>
+                    <input type="text" id="formulaSearchInput" class="form-control border-0 px-2 fs-6" placeholder="Nhập tên công thức, chủ đề hoặc từ khóa cần tìm..." onkeyup="liveSearchFormulas()">
+                </div>
+            </div>
+
+            <!-- Vòng lặp hiển thị Chuyên đề và Bài học -->
+            {% for cd_id, cd_info in segments.items() %}
+                <div id="{{ cd_id }}" class="mb-5 formula-section-block" style="scroll-margin-top: 100px;">
+                    
+                    <!-- TIÊU ĐỀ CHUYÊN ĐỀ -->
+                    <div class="bg-white p-3 rounded-4 shadow-sm border-start border-primary border-4 mb-4 d-flex align-items-center justify-content-between">
+                        <h3 class="fw-bold text-dark mb-0 fs-5 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-primary fs-4"></i>
+                            <span>{{ cd_info.title }}</span>
+                        </h3>
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 small fw-bold">
+                            {{ cd_info.lessons|length }} Bài học
+                        </span>
+                    </div>
+                    
+                    {% for lesson in cd_info.lessons %}
+                        <!-- TIÊU ĐỀ BÀI HỌC -->
+                        <div class="bg-white px-3 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2 mb-3 border">
+                            <i class="fa-solid fa-book-open text-info"></i>
+                            <h5 class="text-secondary fw-bold mb-0 fs-6">{{ lesson.lesson_name }}</h5>
+                        </div>
+                        
+                        <!-- DANH SÁCH THẺ CÔNG THỨC -->
+                        <div class="row row-cols-1 g-4 mb-4">
+                            {% for formula in lesson.formulas %}
+                                <div class="col formula-item-card">
+                                    <div class="card h-100 shadow-sm border-0 bg-white formula-card">
+                                        <div class="card-body p-4">
+                                            
+                                            <!-- Tên Công Thức & Nút Thao Tác -->
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h5 class="card-title fw-bold text-primary mb-0 d-flex align-items-center gap-2">
+                                                    <i class="fa-solid fa-square-root-variable text-warning"></i>
+                                                    <span class="searchable-title">{{ formula.name }}</span>
+                                                </h5>
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-light btn-sm text-secondary rounded-circle shadow-sm" onclick="copyFormula('{{ formula.id }}')" title="Sao chép công thức">
+                                                        <i class="fa-regular fa-copy"></i>
+                                                    </button>
+                                                    <button class="btn btn-light btn-sm text-danger rounded-circle shadow-sm" title="Yêu thích">
+                                                        <i class="fa-regular fa-heart"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Vùng hiển thị LaTeX (Đã thu nhỏ & chống tràn viền) -->
+                                            <div class="p-3 text-center my-3 latex-box">
+                                                <div id="{{ formula.id }}" class="formula-math-display py-1 text-dark">$${{ formula.latex_code }}$$</div>
+                                            </div>
+
+                                            <!-- Giải thích -->
+                                            <p class="card-text text-muted small mb-3">
+                                                <strong class="text-dark"><i class="fa-solid fa-circle-info text-info me-1"></i>Giải thích:</strong> {{ formula.explanation }}
+                                            </p>
+                                            
+                                            <!-- Cảnh báo Lỗi thường gặp -->
+                                            <div class="alert alert-warning p-2 px-3 small mb-2 border-0 rounded-3 d-flex align-items-start gap-2">
+                                                <i class="fa-solid fa-triangle-exclamation text-warning mt-1"></i>
+                                                <div><strong>Lỗi thường gặp:</strong> {{ formula.common_errors }}</div>
+                                            </div>
+
+                                            <!-- Mẹo nhớ nhanh -->
+                                            <div class="alert alert-success p-2 px-3 small mb-3 border-0 rounded-3 d-flex align-items-start gap-2">
+                                                <i class="fa-solid fa-lightbulb text-success mt-1"></i>
+                                                <div><strong>Mẹo nhớ nhanh:</strong> {{ formula.memory_trick }}</div>
+                                            </div>
+
+                                            <!-- Mục Lời Giải Thu Gọn Accordion Ví Dụ Minh Họa -->
+                                            <div class="accordion accordion-flush rounded-3 overflow-hidden border" id="accordion-{{ formula.id }}">
+                                                <div class="accordion-item border-0">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button collapsed fw-bold text-primary bg-light px-3 py-2 small" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{ formula.id }}">
+                                                            <i class="fa-solid fa-magnifying-glass-plus me-2"></i>Xem ví dụ minh họa chi tiết từng bước
+                                                        </button>
+                                                    </h2>
+                                                    <div id="flush-{{ formula.id }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ formula.id }}">
+                                                        <div class="accordion-body bg-light border-top p-3 small">
+                                                            
+                                                            <!-- Ví dụ Cơ bản -->
+                                                            <div class="mb-3">
+                                                                <h6 class="fw-bold text-primary d-flex align-items-center gap-1">
+                                                                    <i class="fa-solid fa-star text-warning"></i> Ví dụ cơ bản:
+                                                                </h6>
+                                                                <p class="mb-1 fw-semibold text-dark">{{ formula.example_basic.question|safe }}</p>
+                                                                <p class="text-muted mb-1"><em>Lời giải:</em> {{ formula.example_basic.solution|safe }}</p>
+                                                                <p class="text-success fw-bold mb-0">👉 Đáp số: {{ formula.example_basic.final_answer|safe }}</p>
+                                                            </div>
+                                                            
+                                                            <hr class="my-3 opacity-25">
+                                                            
+                                                            <!-- Ví dụ Vận dụng -->
+                                                            <div>
+                                                                <h6 class="fw-bold text-danger d-flex align-items-center gap-1">
+                                                                    <i class="fa-solid fa-fire text-danger"></i> Ví dụ vận dụng:
+                                                                </h6>
+                                                                <p class="mb-1 fw-semibold text-dark">{{ formula.example_advanced.question|safe }}</p>
+                                                                <p class="text-muted mb-1"><em>Lời giải:</em> {{ formula.example_advanced.solution|safe }}</p>
+                                                                <p class="text-danger fw-bold mb-0">👉 Đáp số: {{ formula.example_advanced.final_answer|safe }}</p>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS HỖ TRỢ -->
+<script>
+    function copyFormula(elementId) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert("Đã sao chép mã công thức Toán thành công!");
+        }).catch(err => {
+            console.error("Không thể sao chép: ", err);
+        });
+    }
+
+    function liveSearchFormulas() {
+        const query = document.getElementById('formulaSearchInput').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.formula-item-card');
+
+        cards.forEach(card => {
+            const titleText = card.querySelector('.searchable-title') ? card.querySelector('.searchable-title').innerText.toLowerCase() : '';
+            const bodyText = card.innerText.toLowerCase();
+
+            if (titleText.includes(query) || bodyText.includes(query)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        accordionButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                setTimeout(() => {
+                    if (window.MathJax && MathJax.typesetPromise) {
+                        MathJax.typesetPromise();
+                    }
+                }, 150);
+            });
+        });
+    });
+</script>
+{% endblock %}

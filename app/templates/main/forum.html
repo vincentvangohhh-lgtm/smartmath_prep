@@ -1,0 +1,538 @@
+{% extends "base.html" %}
+
+{% block title %}Diễn Đàn Thảo Luận - Math 12A3{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f1f5f9 !important;
+        color: #1e293b;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    /* Tạo lớp quầng sáng ảo mượt tuyệt đối đằng sau */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+        background-image: 
+            radial-gradient(at 10% 15%, rgba(93, 224, 230, 0.35) 0px, transparent 60%),
+            radial-gradient(at 90% 85%, rgba(0, 74, 173, 0.28) 0px, transparent 60%) !important;
+        filter: blur(40px);
+        transform: scale(1.1);
+    }
+
+    /* Mở rộng Container để làm Layout 2 Cột */
+    .forum-main-container {
+        max-width: 1140px;
+        margin: 0 auto;
+    }
+
+    .forum-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Tag Nhãn */
+    .forum-tag-badge {
+        background-color: #fef3c7;
+        color: #d97706;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Khung nhập văn bản nhiều dòng */
+    .post-textarea {
+        border-radius: 16px;
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 12px 16px;
+        font-size: 14px;
+        width: 100%;
+        outline: none;
+        resize: none;
+        transition: border-color 0.2s;
+    }
+
+    .post-textarea:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+
+    /* Thanh công cụ toán học */
+    .math-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        background-color: #f8fafc;
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-math-symbol {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #1e293b;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-math-symbol:hover {
+        background-color: #0d6efd;
+        color: #ffffff;
+        border-color: #0d6efd;
+    }
+
+    /* Nút tương tác Like/Comment */
+    .forum-action-btn {
+        background-color: transparent !important;
+        border: none !important;
+        color: #64748b !important;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        padding: 6px 14px;
+        border-radius: 20px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .forum-action-btn:hover {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    .forum-action-btn.liked {
+        background-color: #eff6ff !important;
+        color: #0d6efd !important;
+    }
+
+    .forum-action-btn.liked i,
+    .forum-action-btn.liked span {
+        color: #0d6efd !important;
+    }
+
+    .btn-pill-option {
+        background-color: #fef3c7;
+        color: #92400e;
+        border: none;
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-pill-option:hover {
+        background-color: #fde68a;
+    }
+
+    .user-avatar-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: #fef3c7;
+        color: #d97706;
+        font-weight: bold;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Sidebar Widget Styling */
+    .sidebar-widget {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        padding: 18px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    .sidebar-filter-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        color: #475569;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+
+    .sidebar-filter-item:hover, .sidebar-filter-item.active {
+        background-color: #eff6ff;
+        color: #0d6efd;
+    }
+</style>
+
+<div class="container my-4 forum-main-container">
+    
+    <!-- HEADER -->
+    <div class="forum-card p-4 mb-4">
+        <div class="text-muted small fw-semibold mb-1">
+            <a href="{{ url_for('main.index') }}" class="text-decoration-none text-primary fw-bold">Trang chủ</a> 
+            <span class="text-secondary mx-1">/</span> 
+            <span class="text-dark fw-bold">Diễn Đàn</span>
+        </div>
+        <h2 class="fw-bold text-dark mb-0">Thảo Luận & Hỏi Đáp Toán Học</h2>
+    </div>
+
+    <div class="row g-4">
+        
+        <!-- ============================================================================== -->
+        <!-- CỘT TRÁI - NỘI DUNG CHÍNH (MAIN STREAM - 8 COLUMNS) -->
+        <!-- ============================================================================== -->
+        <div class="col-lg-8">
+            
+            <!-- KHUNG ĐẶT CÂU HỎI -->
+            <div class="forum-card p-3 mb-4">
+                <form action="{{ url_for('main.create_forum_post') }}" method="POST" enctype="multipart/form-data">
+                    
+                    <!-- 1. Thanh công cụ công thức Toán -->
+                    <div class="math-toolbar mb-2">
+                        <span class="small text-muted fw-bold align-self-center me-1" style="font-size: 11px;">Chèn nhanh:</span>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\frac{a}{b}')" title="Phân số">$\frac{a}{b}$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', 'x^{2}')" title="Bình phương">$x^2$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\sqrt{x}')" title="Căn bậc hai">$\sqrt{x}$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\int_{a}^{b}')" title="Tích phân">$\int$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\lim_{x \\to x_0}')" title="Giới hạn">$\lim$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\log_{a}(b)')" title="Logarit">$\log$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\pi')" title="Số Pi">$\pi$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\vec{a}')" title="Vectơ">$\vec{a}$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\Delta')" title="Delta">$\Delta$</button>
+                        <button type="button" class="btn-math-symbol" onclick="insertMathSymbol('main-post-input', '\\alpha')" title="Alpha">$\alpha$</button>
+                    </div>
+
+                    <!-- 2. Ô nhập dạng Textarea nhiều dòng -->
+                    <div class="d-flex align-items-start gap-3 mb-2">
+                        {% if current_user.avatar %}
+                            <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}" class="rounded-circle mt-1" style="width: 42px; height: 42px; object-fit: cover;">
+                        {% else %}
+                            <div class="user-avatar-circle mt-1">
+                                {{ (current_user.username[0] if current_user.username else 'H')|upper }}
+                            </div>
+                        {% endif %}
+                        
+                        <textarea name="content" id="main-post-input" class="post-textarea" rows="2" placeholder="Đặt câu hỏi hoặc chia sẻ bài toán khó cần giải..." required></textarea>
+                    </div>
+
+                    <!-- File đính kèm ảnh -->
+                    <input type="file" name="image" id="forumFileInput" accept="image/*" class="d-none" onchange="showImageName(this)">
+
+                    <div id="fileNameDisplay" class="small text-success fw-bold px-3 mb-2 d-none">
+                        <i class="fa-solid fa-paperclip me-1"></i><span id="fileNameText"></span>
+                    </div>
+
+                    <!-- Nút đính kèm & đăng bài -->
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                        <button type="button" class="btn-pill-option" onclick="document.getElementById('forumFileInput').click()">
+                            <i class="fa-regular fa-image text-warning"></i> Đính kèm Ảnh đề bài
+                        </button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Đăng câu hỏi
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- DANH SÁCH BÀI VIẾT FEED -->
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="forum-card p-4 mb-4">
+                        
+                        <!-- Tag khối lớp & Nút xóa bài viết -->
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="forum-tag-badge">
+                                <i class="fa-solid fa-users"></i> 
+                                {% if post.author and post.author.grade %}
+                                    {% if '12' in post.author.grade|string %}
+                                        LỚP 12 (ÔN THI THPT) - TRAO ĐỔI HỌC TẬP
+                                    {% elif '11' in post.author.grade|string %}
+                                        LỚP 11 - TRAO ĐỔI HỌC TẬP
+                                    {% else %}
+                                        LỚP 10 - TRAO ĐỔI HỌC TẬP
+                                    {% endif %}
+                                {% else %}
+                                    LỚP 12 (ÔN THI THPT) - TRAO ĐỔI HỌC TẬP
+                                {% endif %}
+                            </span>
+                            
+                            <!-- 🟢 NÚT XÓA BÀI VIẾT DÀNH CHO ADMIN / GIÁO VIÊN HOẶC TÁC GIẢ -->
+                            {% if current_user.is_authenticated and (current_user.role in ['admin', 'teacher'] or post.user_id == current_user.id) %}
+                                <form action="{{ url_for('main.delete_forum_post', post_id=post.id) }}" method="POST" class="mb-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
+                                    <button type="submit" class="btn btn-link text-danger p-0 border-0" title="Xóa bài viết">
+                                        <i class="fa-solid fa-trash-can fs-5"></i>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-link text-muted p-0 border-0" type="button">
+                                    <i class="fa-solid fa-ellipsis"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tác giả bài viết -->
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            {% if post.author and post.author.avatar %}
+                                <img src="{{ url_for('static', filename='uploads/avatars/' + post.author.avatar) }}" class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;">
+                            {% else %}
+                                <div class="user-avatar-circle">
+                                    {{ (post.author.username[0] if post.author and post.author.username else 'H')|upper }}
+                                </div>
+                            {% endif %}
+
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">{{ post.author.username if post.author else 'Học sinh' }}</h6>
+                                <small class="text-muted" style="font-size: 11px;">{{ post.created_at.strftime('%H:%M - %d/%m/%Y') }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Nội dung câu hỏi -->
+                        <div class="text-dark mb-3 fs-6" style="line-height: 1.6;">
+                            {{ post.content }}
+                        </div>
+
+                        <!-- Ảnh đính kèm -->
+                        {% if post.image_url %}
+                            <div class="mb-3 text-center rounded-3 overflow-hidden border">
+                                <img src="{{ url_for('static', filename='uploads/forum/' + post.image_url) }}" alt="Ảnh câu hỏi" class="img-fluid w-100" style="max-height: 500px; object-fit: contain; background-color: #f8fafc;">
+                            </div>
+                        {% endif %}
+
+                        <!-- Thanh Tương Tác: Like & Comment -->
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="forum-action-btn" id="like-btn-{{ post.id }}" onclick="likePost({{ post.id }})">
+                                    <i class="fa-regular fa-thumbs-up fs-5"></i> 
+                                    <span id="likes-count-{{ post.id }}">{{ post.likes_count or 0 }}</span>
+                                </button>
+                                
+                                <button type="button" class="forum-action-btn" onclick="toggleCommentBox({{ post.id }})">
+                                    <i class="fa-regular fa-comment fs-5"></i> 
+                                    <span>{{ post.comments_count or (post.comments|length) }} Bình luận</span>
+                                </button>
+                            </div>
+                            <button type="button" class="forum-action-btn" title="Chia sẻ bài viết">
+                                <i class="fa-solid fa-share-nodes fs-5"></i>
+                            </button>
+                        </div>
+
+                        <!-- KHUNG BÌNH LUẬN & LỜI GIẢI ĐÁP -->
+                        <div id="comment-section-{{ post.id }}" class="p-3 bg-light rounded-3 mt-3 d-none">
+                            <form action="{{ url_for('main.add_forum_comment', post_id=post.id) }}" method="POST" class="d-flex gap-2 mb-3">
+                                <input type="text" name="content" class="form-control form-control-sm rounded-pill px-3" placeholder="Viết câu trả lời / lời giải..." required>
+                                <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">Gửi</button>
+                            </form>
+
+                            {% if post.comments %}
+                                <div class="d-flex flex-column gap-2">
+                                    {% for c in post.comments %}
+                                        <div class="bg-white p-2 px-3 rounded-3 border shadow-sm mb-2">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <strong class="small text-dark">{{ c.author.username if c.author else 'Học sinh' }}</strong>
+                                                <small class="text-muted ms-auto" style="font-size: 10px;">{{ c.created_at.strftime('%H:%M %d/%m') }}</small>
+                                                
+                                                <!-- 🟢 NÚT XÓA BÌNH LUẬN -->
+                                                {% if current_user.is_authenticated and (current_user.role in ['admin', 'teacher'] or c.user_id == current_user.id) %}
+                                                    <form action="{{ url_for('main.delete_forum_comment', comment_id=c.id) }}" method="POST" class="ms-2" onsubmit="return confirm('Xóa bình luận này?');">
+                                                        <button type="submit" class="btn btn-link text-danger p-0 border-0" style="font-size: 11px;" title="Xóa bình luận">
+                                                            <i class="fa-solid fa-trash-can"></i>
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                            <div class="small text-secondary ps-2">{{ c.content }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="forum-card p-5 text-center text-muted">
+                    <i class="fa-regular fa-comments fs-1 mb-2"></i>
+                    <p class="mb-0">Chưa có thảo luận nào. Hãy là người đầu tiên đặt câu hỏi!</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- ============================================================================== -->
+        <!-- CỘT PHẢI - SIDEBAR TIỆN ÍCH (30% - 4 COLUMNS) -->
+        <!-- ============================================================================== -->
+        <div class="col-lg-4">
+            
+            <!-- WIDGET 1: BỘ LỌC CHUYÊN ĐỀ TOÁN -->
+            <div class="sidebar-widget">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-filter text-primary me-2"></i>Lọc Bài Viết</h6>
+                <div class="d-flex flex-column gap-1">
+                    <a href="#" class="sidebar-filter-item active">
+                        <i class="fa-solid fa-layer-group"></i> Tất cả thảo luận
+                    </a>
+                    <a href="#" class="sidebar-filter-item">
+                        <i class="fa-solid fa-shapes"></i> Hình học không gian
+                    </a>
+                    <a href="#" class="sidebar-filter-item">
+                        <i class="fa-solid fa-chart-line"></i> Hàm số & Đồ thị
+                    </a>
+                    <a href="#" class="sidebar-filter-item">
+                        <i class="fa-solid fa-calculator"></i> Tích phân & Đạo hàm
+                    </a>
+                    <a href="#" class="sidebar-filter-item">
+                        <i class="fa-solid fa-circle-question text-warning"></i> Câu hỏi chưa lời giải
+                    </a>
+                </div>
+            </div>
+
+            <!-- WIDGET 2: TOP HỌC SINH TÍCH CỰC -->
+            <div class="sidebar-widget">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-trophy text-warning me-2"></i>Top Trợ Thủ Học Tập</h6>
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-4">🥇</span>
+                            <img src="{{ url_for('static', filename='images/top1.png') }}" class="rounded-circle shadow-sm" style="width: 42px; height: 42px; object-fit: cover; border: 2px solid #ffb703;" alt="Top 1">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0 small">Quốc Anh</h6>
+                                <small class="text-warning fw-semibold" style="font-size: 11px;">15 Lời giải đúng</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-light">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-4">🥈</span>
+                            <img src="{{ url_for('static', filename='images/top2.png') }}" class="rounded-circle shadow-sm" style="width: 42px; height: 42px; object-fit: cover; border: 2px solid #94a3b8;" alt="Top 2">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0 small">Uta</h6>
+                                <small class="text-muted" style="font-size: 11px;">12 Lời giải đúng</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-light">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-4">🥉</span>
+                            <img src="{{ url_for('static', filename='images/top3.png') }}" class="rounded-circle shadow-sm" style="width: 42px; height: 42px; object-fit: cover; border: 2px solid #f97316;" alt="Top 3">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0 small">Nam</h6>
+                                <small class="text-muted" style="font-size: 11px;">9 Lời giải đúng</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WIDGET 3: QUY TẮC DIỄN ĐÀN -->
+            <div class="sidebar-widget bg-light border-0">
+                <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-circle-info text-info me-2"></i>Quy tắc thảo luận</h6>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.6; font-size: 12px;">
+                    <li>Giữ thái độ lịch sự, tôn trọng bạn học.</li>
+                    <li>Khuyến khích sử dụng công thức Toán LaTeX để bài viết rõ ràng.</li>
+                    <li>Không đăng nội dung rác hoặc quảng cáo ngoài bài học.</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script>
+    function showImageName(input) {
+        if (input.files && input.files[0]) {
+            document.getElementById('fileNameText').innerText = input.files[0].name;
+            document.getElementById('fileNameDisplay').classList.remove('d-none');
+        }
+    }
+
+    function insertMathSymbol(inputId, latexCode) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        const formattedCode = ` $${latexCode}$ `;
+        const startPos = input.selectionStart;
+        const endPos = input.selectionEnd;
+        const currentValue = input.value;
+
+        input.value = currentValue.substring(0, startPos) + formattedCode + currentValue.substring(endPos, currentValue.length);
+
+        input.focus();
+        input.selectionStart = startPos + formattedCode.length;
+        input.selectionEnd = startPos + formattedCode.length;
+
+        if (window.MathJax && MathJax.typeset) {
+            MathJax.typeset();
+        }
+    }
+
+    function likePost(postId) {
+        const btn = document.getElementById(`like-btn-${postId}`);
+        const icon = btn ? btn.querySelector('i') : null;
+        const countEl = document.getElementById(`likes-count-${postId}`);
+
+        fetch(`/forum/like/${postId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (countEl) countEl.innerText = data.likes_count;
+                if (btn) {
+                    btn.classList.toggle('liked');
+                    if (icon) {
+                        if (btn.classList.contains('liked')) {
+                            icon.classList.remove('fa-regular');
+                            icon.classList.add('fa-solid');
+                        } else {
+                            icon.classList.remove('fa-solid');
+                            icon.classList.add('fa-regular');
+                        }
+                    }
+                }
+            }
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+    function toggleCommentBox(postId) {
+        const commentSec = document.getElementById(`comment-section-${postId}`);
+        if (commentSec) {
+            commentSec.classList.toggle('d-none');
+        }
+    }
+</script>
+
+{% endblock %}

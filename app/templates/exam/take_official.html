@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    body {
+        background-color: #d1d5db !important;
+        font-family: "Times New Roman", Times, serif !important;
+        color: #000000 !important;
+    }
+    
+    .paper-a4 {
+        background: #ffffff !important;
+        padding: 45px 55px !important;
+        margin: 15px auto !important;
+        max-width: 880px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+        border-radius: 3px !important;
+    }
+
+    .header-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+
+    .code-box {
+        border: 1.5px solid #000000;
+        padding: 2px 14px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .part-header {
+        font-weight: bold;
+        font-size: 16px;
+        margin: 25px 0 15px 0;
+        border-bottom: 1px solid #000000;
+        padding-bottom: 4px;
+    }
+
+    .question-item {
+        font-size: 16.5px;
+        line-height: 1.6;
+        margin-bottom: 22px;
+        color: #000000 !important;
+    }
+
+    /* KHUNG HÌNH ẢNH CHUẨN ĐỀ A4 - KHÔNG VIỀN THỪA */
+    .q-image-container {
+        text-align: center;
+        margin: 10px 0 15px 0;
+        padding: 0;
+        background: transparent !important;
+    }
+
+    .q-image {
+        max-width: 75%;
+        height: auto;
+        border: none !important;        /* Xóa hoàn toàn viền khung xám */
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        display: inline-block;
+    }
+
+    .options-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px 15px;
+        margin-top: 6px;
+    }
+
+    .sticky-side {
+        position: sticky;
+        top: 20px;
+    }
+</style>
+
+<div class="container my-4">
+    <div class="row">
+        <!-- CỘT BÊN TRÁI: TỜ GIẤY A4 ĐỀ THI CHÍNH THỨC -->
+        <div class="col-lg-9">
+            <div class="paper-a4">
+                <!-- HEADER BỘ GD&ĐT -->
+                <table class="header-table">
+                    <tr>
+                        <td style="width: 48%; text-align: center; vertical-align: top;">
+                            <strong>BỘ GIÁO DỤC VÀ ĐÀO TẠO</strong><br>
+                            <strong>ĐỀ THI CHÍNH THỨC</strong><br>
+                            <em>(Đề thi có 04 trang)</em>
+                        </td>
+                        <td style="width: 52%; text-align: center; vertical-align: top;">
+                            <strong>KỲ THI TỐT NGHIỆP TRUNG HỌC PHỔ THÔNG NĂM {{ year }}</strong><br>
+                            <strong>Môn thi: TOÁN</strong><br>
+                            <em>Thời gian làm bài: 90 phút, không kể thời gian phát đề</em>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-top: 15px; border-bottom: 2px solid #000000; padding-bottom: 10px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    Họ, tên thí sinh: ............................................................................<br>
+                                    Số báo danh: ..................................................................................
+                                </div>
+                                <div class="code-box">Mã đề: {{ code_id }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <form id="official-exam-form" method="POST" action="{{ url_for('exam.take_exam', exam_id=exam.id) }}">
+                    <input type="hidden" name="spent_time" id="spent-time-input" value="0">
+
+                    {% if not questions %}
+                        <div class="alert alert-warning text-center my-4">
+                            Chưa có dữ liệu câu hỏi cho Mã đề này trong CSDL.
+                        </div>
+                    {% endif %}
+
+                    {% set current_part = namespace(val='') %}
+                    {% for q in questions %}
+                        
+                        <!-- CHIA PHẦN I, PHẦN II, PHẦN III -->
+                        {% set q_type = q.question_type or 'PART_I' %}
+                        {% if q_type != current_part.val %}
+                            {% set current_part.val = q_type %}
+                            <div class="part-header text-dark">
+                                {% if q_type == 'PART_I' %}
+                                    PHẦN I. Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án.
+                                {% elif q_type == 'PART_II' %}
+                                    PHẦN II. Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.
+                                {% elif q_type == 'PART_III' %}
+                                    PHẦN III. Thí sinh trả lời từ câu 1 đến câu 6. Điền kết quả số vào phiếu trả lời.
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="question-item" id="q-card-{{ loop.index }}">
+                            <p class="mb-1 fw-semibold">
+                                <strong>Câu {{ q.question_number or loop.index }}:</strong> {{ q.content | safe }}
+                            </p>
+
+                            <!-- HÌNH ẢNH / ĐỒ THỊ CHUẨN KHÔNG VIỀN -->
+                            {% if q.image_url %}
+                            <div class="q-image-container">
+                                <img src="{% if q.image_url.startswith('images/') or q.image_url.startswith('static/') %}{{ url_for('static', filename=q.image_url.replace('static/', '')) }}{% else %}{{ url_for('static', filename='images/' + q.image_url) }}{% endif %}" alt="Hình minh họa câu {{ loop.index }}" class="q-image">
+                            </div>
+                            {% endif %}
+
+                            <!-- PHẦN I: 4 ĐÁP ÁN -->
+                            {% if q_type == 'PART_I' %}
+                            <div class="options-row">
+                                <label class="cursor-pointer"><input type="radio" name="question_{{ q.id }}" value="A" class="opt-input" data-qindex="{{ loop.index }}"> <strong>A.</strong> {{ q.option_a | safe }}</label>
+                                <label class="cursor-pointer"><input type="radio" name="question_{{ q.id }}" value="B" class="opt-input" data-qindex="{{ loop.index }}"> <strong>B.</strong> {{ q.option_b | safe }}</label>
+                                <label class="cursor-pointer"><input type="radio" name="question_{{ q.id }}" value="C" class="opt-input" data-qindex="{{ loop.index }}"> <strong>C.</strong> {{ q.option_c | safe }}</label>
+                                <label class="cursor-pointer"><input type="radio" name="question_{{ q.id }}" value="D" class="opt-input" data-qindex="{{ loop.index }}"> <strong>D.</strong> {{ q.option_d | safe }}</label>
+                            </div>
+
+                            <!-- PHẦN II: MỆNH ĐỀ ĐÚNG / SAI -->
+                            {% elif q_type == 'PART_II' %}
+                            <table class="table table-bordered align-middle mt-2" style="font-size: 15px; border-color: #000;">
+                                <thead>
+                                    <tr class="table-light text-center">
+                                        <th>Các phát biểu / Mệnh đề</th>
+                                        <th style="width: 80px;">Đúng</th>
+                                        <th style="width: 80px;">Sai</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>a) {{ q.sub_q_a | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_a" value="Đúng" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_a" value="Sai" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>b) {{ q.sub_q_b | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_b" value="Đúng" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_b" value="Sai" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>c) {{ q.sub_q_c | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_c" value="Đúng" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_c" value="Sai" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>d) {{ q.sub_q_d | safe }}</td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_d" value="Đúng" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                        <td class="text-center"><input type="radio" name="question_{{ q.id }}_d" value="Sai" class="opt-input" data-qindex="{{ loop.index }}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- PHẦN III: ĐIỀN ĐÁP SỐ -->
+                            {% elif q_type == 'PART_III' %}
+                            <div class="mt-2 d-flex align-items-center">
+                                <span class="me-2 fw-bold">Đáp số:</span>
+                                <input type="text" name="question_{{ q.id }}" class="form-control form-control-sm opt-input" style="width: 180px; border-color: #000;" data-qindex="{{ loop.index }}" placeholder="Nhập kết quả...">
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+
+        <!-- CỘT BÊN PHẢI: PHIẾU ĐIỀN KẾT QUẢ & BỘ ĐẾM THỜI GIAN -->
+        <div class="col-lg-3">
+            <div class="sticky-side">
+                <div class="card p-3 border-0 shadow-sm rounded-4 mb-3 text-center">
+                    <h6 class="fw-bold text-muted mb-2">THỜI GIAN CÒN LẠI</h6>
+                    <div class="badge bg-danger p-2 fs-5 shadow-sm">
+                        <i class="fa-solid fa-clock me-2"></i><span id="timer-display">90:00</span>
+                    </div>
+                </div>
+
+                <div class="card p-3 border-0 shadow-sm rounded-4">
+                    <h5 class="fw-bold text-center border-bottom pb-2 mb-3">Phiếu Điền Kết Quả</h5>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+                        {% for q in questions %}
+                        <button type="button" 
+                                id="nav-btn-{{ loop.index }}" 
+                                onclick="scrollToQuestion({{ loop.index }})" 
+                                class="btn btn-outline-secondary btn-sm rounded-circle d-flex justify-content-center align-items-center fw-bold text-dark bg-light" 
+                                style="width: 38px; height: 38px; font-size: 14px;">
+                            {{ loop.index }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" form="official-exam-form" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Nộp Bài Thi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let durationMinutes = 90;
+    let totalSeconds = durationMinutes * 60;
+    const timerDisplay = document.getElementById("timer-display");
+    const officialForm = document.getElementById("official-exam-form");
+    const spentTimeInput = document.getElementById("spent-time-input");
+
+    function updateDisplay() {
+        let mins = Math.floor(totalSeconds / 60);
+        let secs = totalSeconds % 60;
+        timerDisplay.textContent = (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
+    }
+
+    setInterval(function() {
+        if (totalSeconds > 0) {
+            totalSeconds--;
+            updateDisplay();
+            if (spentTimeInput) { spentTimeInput.value = (durationMinutes * 60) - totalSeconds; }
+        }
+    }, 1000);
+
+    updateDisplay();
+
+    const inputs = document.querySelectorAll(".opt-input");
+    inputs.forEach(function(input) {
+        input.addEventListener("change", function() {
+            const qIndex = this.getAttribute("data-qindex");
+            const navBtn = document.getElementById("nav-btn-" + qIndex);
+            if (navBtn) {
+                navBtn.classList.remove("btn-outline-secondary", "bg-light", "text-dark");
+                navBtn.classList.add("btn-success", "text-white");
+            }
+        });
+    });
+
+    if (window.MathJax) {
+        MathJax.typesetPromise();
+    }
+});
+
+function scrollToQuestion(index) {
+    const element = document.getElementById("q-card-" + index);
+    if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+}
+</script>
+{% endblock %}

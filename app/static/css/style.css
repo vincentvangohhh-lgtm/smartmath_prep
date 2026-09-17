@@ -1,0 +1,649 @@
+/* Trả body về màu xám sáng mặc định ban đầu của Bootstrap */
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Áp dụng hình nền độc lập riêng cho phần thân (main) */
+main {
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    z-index: 1;
+}
+
+/* Tạo lớp phủ mờ nằm gọn bên trong phần thân để chữ không bị lóa */
+main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(248, 249, 250, 0.55);
+    z-index: -1;
+}
+
+/* Đảm bảo phần chân trang luôn có màu trắng tinh nguyên bản và nổi lên trên */
+footer {
+    position: relative;
+    background-color: #ffffff !important;
+    z-index: 10;
+}
+
+/* --- Các class style hiện tại của bạn --- */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.option-box {
+    transition: all 0.2s ease-in-out;
+    background-color: #ffffff;
+}
+
+.option-box:hover {
+    background-color: #f1f7ff;
+    border-color: #0d6efd !important;
+}
+
+.form-check-input:checked + span {
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.question-card {
+    border-left: 5px solid #6c757d;
+    background-color: #ffffff;
+}
+
+.question-card:focus-within {
+    border-left-color: #0d6efd;
+}
+
+/* --- Hiệu ứng icon mạng xã hội ở chân trang --- */
+.transition-icon {
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.transition-icon:hover {
+    transform: scale(1.15);
+    opacity: 0.85;
+}
+
+/* --- Tối ưu hóa hiển thị ảnh chân trang --- */
+.profile-footer-img {
+    filter: grayscale(20%) sepia(10%);
+    transition: all 0.3s ease-in-out;
+}
+
+.profile-footer-img:hover {
+    filter: grayscale(0%) sepia(0%);
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+.roadmap-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.roadmap-card:hover .transition-hover {
+    transform: translateY(-4px);
+    background-color: #ffffff !important;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+}
+
+.bg-danger-light { background-color: #fee2e2; }
+.bg-info-light { background-color: #e0f2fe; }
+
+/* Định nghĩa màu mặc định (Light Mode) */
+:root {
+    --bg-primary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-main: #212529;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --bg-interactive-hover: #ffffff;
+}
+
+/* Định nghĩa màu khi kích hoạt Dark Mode */
+[data-theme="dark"] {
+    --bg-primary: #121212;
+    --bg-card: #1e1e1e;
+    --text-main: #f8f9fa;
+    --text-muted: #a0a0a0;
+    --border-color: #333333;
+    --bg-interactive-hover: #2d2d2d;
+}
+
+/* Áp dụng biến vào toàn bộ hệ thống */
+body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-main) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+    transition: all 0.3s ease-in-out;
+}
+
+.text-dark {
+    color: var(--text-main) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.bg-light {
+    background-color: var(--bg-interactive-hover) !important;
+}
+
+.roadmap-interactive-card:hover .transition-box {
+    background-color: var(--bg-interactive-hover) !important;
+    border-color: var(--border-color) !important;
+}
+
+.bg-white-adaptive {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 !important;
+}
+
+.option-text, .option-text * {
+    color: #212529 !important;
+}
+
+[data-theme="dark"] .bg-white-adaptive {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .option-text, 
+[data-theme="dark"] .option-text * {
+    color: var(--text-main) !important;
+}
+
+.option-box {
+    transition: all 0.2s ease;
+}
+
+.option-box:hover {
+    background-color: var(--bg-interactive-hover) !important;
+    opacity: 0.9;
+}
+
+/* Icons & Dropdowns */
+.icon-badge-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.icon-badge-btn:hover {
+    transform: scale(1.15);
+    color: #ffe066;
+}
+
+.icon-badge-btn .badge-counter {
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    font-weight: 800;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.dropdown-menu-dark-custom {
+    background-color: #1a222d !important;
+    color: #ffffff !important;
+    border: 1px solid #2d3748 !important;
+    border-radius: 12px !important;
+    width: 320px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4) !important;
+    margin-top: 10px;
+    animation: fadeInDropdown 0.25s ease-out;
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #2d3748;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.dropdown-menu-dark-custom::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 18px;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent #1a222d transparent;
+}
+
+.user-avatar-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    padding-left: 8px;
+}
+
+.user-avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0d6efd;
+    font-size: 20px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: transform 0.2s ease;
+}
+
+.user-avatar-box:hover .user-avatar-img {
+    transform: scale(1.08);
+}
+
+.hero-banner-slogan {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a4bce 100%);
+    color: #ffffff;
+    padding: 38px 20px;
+    text-align: center;
+    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.12);
+    transition: background 0.3s ease;
+}
+
+[data-theme="dark"] .hero-banner-slogan {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.5);
+}
+
+.custom-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll-container::-webkit-scrollbar-track {
+    background: #111827;
+    border-radius: 8px;
+}
+
+.custom-scroll-container::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 8px;
+}
+
+.custom-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+.custom-scroll-container {
+    max-height: 320px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.math-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background-color: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 10px;
+}
+
+.btn-math-symbol {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-math-symbol:hover {
+    background-color: #0d6efd;
+    color: #ffffff;
+    border-color: #0d6efd;
+}
+
+/* ============================================================================== */
+/* 📐 XỬ LÝ MATHJAX VÀ KHOẢNG CÁCH CHỮ                                            */
+/* ============================================================================== */
+p, span, div, a, li {
+    letter-spacing: normal !important;
+}
+
+mjx-container {
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    margin: 8px 4px !important;
+    display: inline-block !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    vertical-align: middle;
+}
+
+mjx-container * {
+    letter-spacing: initial !important;
+}
+
+mjx-mo {
+    padding-left: 0.25em !important;
+    padding-right: 0.25em !important;
+}
+
+.formula-card, .card, .formula-content-box {
+    line-height: 1.75 !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.alert, .alert-warning, .alert-info, .alert-success {
+    margin-top: 14px !important;
+    margin-bottom: 14px !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+}
+
+@media (max-width: 768px) {
+    .formula-card, .card {
+        padding: 12px !important;
+        margin-bottom: 14px !important;
+    }
+}
+
+/* ============================================================================== */
+/* 📱 TỐI ƯU GIAO DIỆN MOBILE & LỊCH SỬ LÀM BÀI                                   */
+/* ============================================================================== */
+@media (max-width: 991.98px) {
+    .card-header, .d-flex.justify-content-between, div[class*="d-flex"] {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .badge, span.badge, div.badge {
+        font-size: 11px !important;
+        padding: 5px 10px !important;
+        white-space: normal !important;
+        text-align: center;
+        max-width: 100%;
+        height: auto;
+    }
+
+    h1, h2, h3, .badge, span, p {
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .hero-section h1, h1.display-4 {
+        font-size: 2rem !important;
+        line-height: 1.3 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-responsive table thead,
+    .dashboard-table thead,
+    table.table-hover thead {
+        display: none !important;
+    }
+
+    .table-responsive table tr,
+    .dashboard-table tr,
+    table.table-hover tr {
+        display: block !important;
+        background: var(--bg-card, #ffffff) !important;
+        border: 1px solid var(--border-color, #e2e8f0) !important;
+        border-radius: 14px !important;
+        margin-bottom: 14px !important;
+        padding: 14px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-responsive table td,
+    .dashboard-table td,
+    table.table-hover td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        text-align: right !important;
+        padding: 8px 0 !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+        font-size: 13.5px !important;
+    }
+
+    .table-responsive table td:last-child,
+    .dashboard-table td:last-child,
+    table.table-hover td:last-child {
+        border-bottom: none !important;
+        padding-top: 12px !important;
+        justify-content: flex-end !important;
+        gap: 8px;
+    }
+
+    .table-responsive table td:nth-child(1)::before { content: "Bài kiểm tra:"; font-weight: bold; color: var(--text-muted, #64748b); }
+    .table-responsive table td:nth-child(2)::before { content: "Thời gian:"; font-weight: bold; color: var(--text-muted, #64748b); }
+    .table-responsive table td:nth-child(3)::before { content: "Số câu đúng:"; font-weight: bold; color: var(--text-muted, #64748b); }
+    .table-responsive table td:nth-child(4)::before { content: "Điểm số:"; font-weight: bold; color: var(--text-muted, #64748b); }
+    .table-responsive table td:nth-child(5)::before { content: "Thao tác:"; font-weight: bold; color: var(--text-muted, #64748b); }
+
+    .table-responsive table td .btn,
+    table.table-hover td .btn {
+        padding: 6px 14px !important;
+        font-size: 12px !important;
+        border-radius: 20px !important;
+    }
+}
+
+/* ============================================================================== */
+/* 🔥 WIDGET STREAK & TOP RANKING FIXES                                         */
+/* ============================================================================== */
+@media (max-width: 768px) {
+    .streak-widget-card {
+        padding: 16px !important;
+        border-radius: 18px !important;
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.08) !important;
+    }
+}
+
+.streak-widget-card {
+    overflow: hidden !important;
+    width: 100%;
+}
+
+.badge-top, div:has(> .fa-trophy) + *, span[class*="top"], span[class*="rank"], 
+div[style*="border-radius: 50%"]:has(> span), .position-absolute:has(span) {
+    white-space: nowrap !important;
+}
+
+.rounded-circle + span, .rounded-circle ~ span, .badge, [class*="badge"] {
+    white-space: nowrap !important;
+}
+
+/* ============================================================================== */
+/* 📄 ÉP ĐỀ THI A4 CO GIÃN 100% TRÊN MOBILE (LOẠI BỎ CHATBOT KHỎI VÙNG ẢNH HƯỞNG)  */
+/* ============================================================================== */
+@media (max-width: 991.98px) {
+    .container:not(.chatbot-container), 
+    .container-fluid:not(.chatbot-container), 
+    .card:not(.chatbot-card), 
+    .a4-page, 
+    .exam-paper-container, 
+    .exam-container, 
+    div[style*="width: 210mm"], 
+    div[style*="max-width: 800px"], 
+    div[style*="max-width: 900px"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    .row:not(.chatbot-row), [class*="row"]:not(.chatbot-row) {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .col:not(.chatbot-col), [class*="col-"]:not(.chatbot-col) {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    mjx-container {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+    }
+}
+
+/* ============================================================================== */
+/* 🤖 BẢO VỆ VÀ THU GỌN VÙNG THẢ / XÓA BONG BÓNG CHÁT (HOÀN TOÀN CÔ LẬP)          */
+/* ============================================================================== */
+.chat-delete-zone, 
+.drop-zone-chat, 
+.chat-dropzone, 
+div.chat-delete-zone, 
+div.drop-zone-chat {
+    position: fixed !important;
+    bottom: 25px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 52px !important;
+    height: 52px !important;
+    max-width: 52px !important;
+    min-width: 52px !important;
+    max-height: 52px !important;
+    min-height: 52px !important;
+    border-radius: 50% !important;
+    background-color: #dc3545 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 99999 !important;
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
+    flex: none !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.chat-delete-zone i, 
+.drop-zone-chat i, 
+.chat-dropzone i {
+    font-size: 20px !important;
+    color: #ffffff !important;
+    width: auto !important;
+    height: auto !important;
+    display: inline-block !important;
+    margin: 0 !important;
+}
+
+/* ============================================================================== */
+/* 📚 TỐI ƯU HOÀN HẢO KHUNG XEM CHI TIẾT / PREVIEW TÀI LIỆU TRÊN MOBILE           */
+/* ============================================================================== */
+@media (max-width: 991.98px) {
+    .modal, .modal-backdrop {
+        z-index: 1050 !important;
+    }
+
+    .modal-dialog, 
+    .document-modal-dialog, 
+    .preview-modal-dialog, 
+    .modal-content, 
+    div[class*="modal-"], 
+    div[class*="preview-"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background-color: #ffffff !important;
+    }
+
+    .modal-body, 
+    .document-preview-body, 
+    .preview-container, 
+    div[class*="body"] {
+        flex: 1 1 auto !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        padding: 8px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    iframe, 
+    embed, 
+    object, 
+    .pdf-viewer, 
+    img.preview-img {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: calc(100vh - 120px) !important;
+        border: none !important;
+        display: block !important;
+    }
+
+    .modal-header, div[class*="header"] {
+        flex: 0 0 auto !important;
+        padding: 12px 16px !important;
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+}

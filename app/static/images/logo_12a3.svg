@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" width="100%" height="100%">
+  <defs>
+    <linearGradient id="whaleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1b3a60" />
+      <stop offset="60%" stop-color="#2980b9" />
+      <stop offset="100%" stop-color="#5dade2" />
+    </linearGradient>
+    
+    <linearGradient id="finGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2471a3" />
+      <stop offset="100%" stop-color="#154360" />
+    </linearGradient>
+
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0b131a" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <circle cx="200" cy="165" r="140" fill="none" stroke="#eaf2f8" stroke-width="4" />
+
+  <path d="M 80 170 
+           C 80 90, 260 70, 300 135 
+           C 325 175, 335 185, 360 170 
+           C 368 165, 378 160, 372 190
+           C 365 215, 345 225, 320 212
+           C 270 235, 140 235, 80 170 Z" 
+        fill="url(#whaleGradient)" />
+
+  <path d="M 366 176 C 392 140, 410 145, 402 176 C 395 200, 382 205, 366 176 Z" fill="url(#finGradient)" />
+  <path d="M 366 182 C 392 215, 410 210, 405 182 C 398 162, 382 158, 366 182 Z" fill="url(#finGradient)" />
+
+  <path d="M 175 202 C 188 227, 212 227, 206 206 C 200 190, 182 190, 175 202 Z" fill="url(#finGradient)" />
+
+  <path d="M 125 140 Q 133 134 141 140" stroke="#ffffff" stroke-width="3.5" fill="none" stroke-linecap="round" />
+
+  <circle cx="195" cy="65" r="5" fill="#aed6f1" opacity="0.6" />
+  <circle cx="212" cy="45" r="7.5" fill="#5dade2" opacity="0.8" />
+  <circle cx="232" cy="58" r="4" fill="#aed6f1" opacity="0.6" />
+
+  <g transform="translate(18, -21)" filter="url(#softShadow)">
+    <path d="M 150 112 L 150 129 C 150 140, 198 146, 198 129 L 198 112 Z" fill="#1c2833" />
+    <path d="M 150 112 C 150 120, 198 120, 198 112 C 198 104, 150 104, 150 112 Z" fill="#2d3e50" />
+    <polygon points="174 80, 240 100, 174 120, 108 100" fill="#11161b" stroke="#212f3d" stroke-width="1.5" />
+    <path d="M 174 100 L 118 115 L 118 140" stroke="#f1c40f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="118" cy="142" r="4.5" fill="#f4d03f" />
+  </g>
+</svg>

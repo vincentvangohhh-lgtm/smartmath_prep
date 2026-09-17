@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card p-5 border-0 shadow rounded-4">
+                <div class="mb-4">
+                    <i class="fa-solid fa-clipboard-question text-warning display-3"></i>
+                </div>
+                <h2 class="fw-bold text-dark">Khảo Sát Trình Độ Năng Lực Ban Đầu</h2>
+                <p class="text-muted">Bài thi gồm 25 câu hỏi tổng hợp bao phủ toàn bộ 7 chuyên đề cốt lõi của đề thi THPT Quốc gia môn Toán. Dựa vào tỷ lệ chính xác, thuật toán AI sẽ thiết lập giáo trình và cấu trúc độ khó đề thi phù hợp nhất với bạn.</p>
+                <hr class="my-4">
+                <div class="alert alert-info text-start">
+                    <ul class="mb-0">
+                        <li><strong>Số câu hỏi:</strong> 25 câu trắc nghiệm.</li>
+                        <li><strong>Thời gian khuyến nghị:</strong> Hệ thống không giới hạn thời gian để bạn bộc lộ chính xác tư duy thực tế.</li>
+                        <li><strong>Quy chuẩn đánh giá:</strong> Dưới 40% (Cơ bản), 40-60% (Trung bình), 60-80% (Khá), Trên 80% (Giỏi).</li>
+                    </ul>
+                </div>
+                <form action="{{ url_for('exam.start_survey') }}" method="POST">
+                    <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold rounded-3 shadow mt-3 text-dark">
+                        Bắt Đầu Làm Bài Khảo Sát Ngay <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
